@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -12,8 +14,8 @@ const Navbar = () => {
                     <a href="/#" className="nav-link nav-link">Restaurant</a>
                 </div>
                 <div className="navbar-nav ms-auto">
-                    <a href="/#" className="btn btn-outline-dark me-3">Login</a>
-                    <a href="/#" className="btn btn-primary">Sign up</a>
+                    <NavLink to="/login" exact={true} className="btn btn-outline-dark me-3">Login</NavLink>
+                    <NavLink to="/register" className="btn btn-outline-primary">Register</NavLink>
                 </div>
             </div>
         </div>

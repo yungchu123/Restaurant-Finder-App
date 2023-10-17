@@ -35,8 +35,8 @@ const LoginForm = () => {
             <div class="row">
                 <div class="col-sm-10 offset-sm-2">
                     <button type="submit" class="btn btn-primary float-start">Login</button>
-                    <button type="submit" class="btn btn-secondary btn-sm float-end ">Register</button>
-                    <button type="submit" class="btn btn-secondary btn-sm float-end me-3">Forget Password</button>
+                    <a href="/register" class="btn btn-secondary btn-sm float-end">Register</a>
+                    <a href="/#" class="btn btn-secondary btn-sm float-end me-3">Forget Password</a>
                 </div>
             </div>
         </form>
