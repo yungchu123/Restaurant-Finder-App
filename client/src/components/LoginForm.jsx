@@ -1,16 +1,17 @@
 import { useState } from "react"
 
-const LoginForm = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+const LoginForm = ({authenticate}) => {
+    const [username, setUsername] = useState('10001');
+    const [password, setPassword] = useState('password');
 
-    const handleSubmit = (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
+        authenticate(username, password)
     }
 
     return (
         <>
-        <form class="bg-light p-5" onSubmit={handleSubmit}>
+        <form class="bg-light p-5" onSubmit={handleLogin}>
             <h2 class="mb-4">Login</h2>
             <div class="row mb-3">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
