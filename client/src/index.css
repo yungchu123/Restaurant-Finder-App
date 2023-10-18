@@ -1,0 +1,15 @@
+/* Profile Page */
+.profile-row:not(:last-of-type) {
+    box-sizing: content-box;
+    height: 50px;
+    line-height: 50px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.profile-row:last-of-type {
+    box-sizing: content-box;
+    height: 50px;
+    line-height: 50px;
+}

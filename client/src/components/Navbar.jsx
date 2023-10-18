@@ -1,6 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ role, logout }) => {
+const Navbar = ({ role, setIsAuthenticated }) => {
+    const navigate = useNavigate();
+    
+    const logout = () => {
+        setIsAuthenticated(false)
+        navigate('/')
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">

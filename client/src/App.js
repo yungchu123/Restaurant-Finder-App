@@ -3,34 +3,27 @@ import Footer from "./components/Footer";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import GuestPage from "./views/GuestPage";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import ProfilePage from "./views/ProfilePage";
+import UpdateProfilePage from "./views/UpdateProfilePage";
+import { Routes, Route} from "react-router-dom";
 import { useState } from "react";
 
 function App() {
-    const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const authenticate = (username, password) => {
-        // Handle authentication
-        console.log("Authenticating")
-        if (username === "10001" && password === "password") {
-            setIsLoggedIn(true)
-            navigate('/')
-        }
-    }
-
-    const logout = () => {
-        setIsLoggedIn(false)
-        navigate('/')
-    }
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState({
+        firstName: "John",
+        lastName: "Doe",
+        email: "johndoe@gmail.com",
+    })
 
 
-    if (!isLoggedIn) return (
+    if (!isAuthenticated) return (
       <div className="App"> 
             <Navbar/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
-                <Route path="/login" element={<LoginForm authenticate={authenticate} />} />
+                <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/register" element={<RegisterForm />} />
             </Routes>
             <Footer />
@@ -38,9 +31,11 @@ function App() {
     ) 
     return (
       <div className="App"> 
-            <Navbar role="customer" logout={logout}/>
+            <Navbar role="customer" setIsAuthenticated={setIsAuthenticated}/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
+                <Route path="/profile" element={<ProfilePage user={user}/>} />
+                <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
             </Routes>

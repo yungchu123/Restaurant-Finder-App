@@ -1,12 +1,17 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
-const LoginForm = ({authenticate}) => {
+const LoginForm = ({setIsAuthenticated}) => {
+    const navigate = useNavigate();
     const [username, setUsername] = useState('10001');
     const [password, setPassword] = useState('password');
 
     const handleLogin = (e) => {
         e.preventDefault();
-        authenticate(username, password)
+        if (username === "10001" && password === "password") {
+            setIsAuthenticated(true)
+            navigate('/')
+        }
     }
 
     return (
