@@ -13,3 +13,8 @@
     height: 50px;
     line-height: 50px;
 }
+
+/* Star Icon */
+.bi-star-fill {
+    color: #f7c942;
+}
