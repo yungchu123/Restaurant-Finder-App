@@ -5,6 +5,7 @@ import RegisterForm from "./components/RegisterForm";
 import GuestPage from "./views/GuestPage";
 import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
+import RestaurantSearchPage from "./views/RestaurantSearchPage";
 import { Routes, Route} from "react-router-dom";
 import { useState } from "react";
 
@@ -15,6 +16,7 @@ function App() {
         firstName: "John",
         lastName: "Doe",
         email: "johndoe@gmail.com",
+        role: "customer"
     })
 
 
@@ -25,19 +27,19 @@ function App() {
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/register" element={<RegisterForm />} />
+                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
             </Routes>
             <Footer />
       </div>
     ) 
     return (
       <div className="App"> 
-            <Navbar role="customer" setIsAuthenticated={setIsAuthenticated}/>
+            <Navbar role={user.role} setIsAuthenticated={setIsAuthenticated}/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/profile" element={<ProfilePage user={user}/>} />
+                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/register" element={<RegisterForm />} />
             </Routes>
             <Footer />
       </div>
