@@ -1,16 +1,22 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
-const LoginForm = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+const LoginForm = ({setIsAuthenticated}) => {
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('10001');
+    const [password, setPassword] = useState('password');
 
-    const handleSubmit = (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
+        if (username === "10001" && password === "password") {
+            setIsAuthenticated(true)
+            navigate('/')
+        }
     }
 
     return (
         <>
-        <form class="bg-light p-5" onSubmit={handleSubmit}>
+        <form class="bg-light p-5" onSubmit={handleLogin}>
             <h2 class="mb-4">Login</h2>
             <div class="row mb-3">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
@@ -35,8 +41,8 @@ const LoginForm = () => {
             <div class="row">
                 <div class="col-sm-10 offset-sm-2">
                     <button type="submit" class="btn btn-primary float-start">Login</button>
-                    <button type="submit" class="btn btn-secondary btn-sm float-end ">Register</button>
-                    <button type="submit" class="btn btn-secondary btn-sm float-end me-3">Forget Password</button>
+                    <a href="/register" class="btn btn-secondary btn-sm float-end">Register</a>
+                    <a href="/#" class="btn btn-secondary btn-sm float-end me-3">Forget Password</a>
                 </div>
             </div>
         </form>

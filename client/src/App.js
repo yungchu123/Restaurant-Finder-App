@@ -2,17 +2,49 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import GuestPage from "./views/GuestPage";
+import ProfilePage from "./views/ProfilePage";
+import UpdateProfilePage from "./views/UpdateProfilePage";
+import RestaurantSearchPage from "./views/RestaurantSearchPage";
+import { Routes, Route} from "react-router-dom";
+import { useState } from "react";
 
 function App() {
-  return (
-    <div className="App"> 
-          <Navbar />
-          <LoginForm />
-          <h1 className="mt-3 vh-100">My React App</h1>
-          <RegisterForm />
-          <Footer />
-    </div>
-  );
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState({
+        firstName: "John",
+        lastName: "Doe",
+        email: "johndoe@gmail.com",
+        role: "customer"
+    })
+
+
+    if (!isAuthenticated) return (
+      <div className="App"> 
+            <Navbar/>
+            <Routes>
+                <Route path="/" element={<GuestPage />} />
+                <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} />} />
+                <Route path="/register" element={<RegisterForm />} />
+                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
+            </Routes>
+            <Footer />
+      </div>
+    ) 
+    return (
+      <div className="App"> 
+            <Navbar role={user.role} setIsAuthenticated={setIsAuthenticated}/>
+            <Routes>
+                <Route path="/" element={<GuestPage />} />
+                <Route path="/profile" element={<ProfilePage user={user}/>} />
+                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
+                <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
+            </Routes>
+            <Footer />
+      </div>
+    )
+
 }
 
 export default App;
