@@ -4,8 +4,6 @@
 
 const mongoose = require("mongoose");
 
-// trim removes leading and trailing white spaces during user input
-
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -41,5 +39,4 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
 module.exports = User;
