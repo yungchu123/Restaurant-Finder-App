@@ -4,51 +4,49 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const PLACES_API_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
-const SINGAPORE_LOCATION = '1.3521,103.8198';
-const RADIUS = 50000;
+mongoose.connect(process.env.DATABASE_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
-const restaurantSchema = new mongoose.Schema({}, { strict: false });
-const Restaurant = mongoose.model('Restaurant', restaurantSchema);
+const RawApiResponseSchema = new mongoose.Schema({}, { strict: false });
+const ApiResponse = mongoose.model('ApiResponse', RawApiResponseSchema);
 
-async function fetchData() {
-    let nextPageToken;
+const GOOGLE_API_ENDPOINT = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+const SINGAPORE_LOCATION = '1.3521,103.8198'
 
+async function fetchRestaurants(nextPageToken) {
     try {
-        await mongoose.connect(process.env.DATABASE_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-        let params = {
-            location: SINGAPORE_LOCATION,
-            radius: RADIUS,
-            type: 'restaurant',
-            key: GOOGLE_API_KEY
-        };
-
-        do {
-            let response = await axios.get(PLACES_API_URL, { params: params });
-
-            if (response.data && response.data.results) {
-                for (let result of response.data.results) {
-                    const restaurant = new Restaurant(result);
-                    await restaurant.save();
-                }
+        const response = await axios.get(GOOGLE_API_ENDPOINT, {
+            params: {
+                location: SINGAPORE_LOCATION,
+                radius: 50000, 
+                type: 'restaurant',
+                key: process.env.GOOGLE_API_KEY,
+                pagetoken: nextPageToken || null
             }
+        });
 
-            nextPageToken = response.data.next_page_token;
-            if (nextPageToken) {
-                params.pagetoken = nextPageToken;
-            }
+        console.log(response.data)
 
-        } while (nextPageToken);
+        for (const restaurant of response.data.results) {
+            const apiResponse = new ApiResponse({
+                ...restaurant
+            });
+            await apiResponse.save();
+        }
 
-        console.log("Data fetched and inserted into MongoDB.");
+        if (response.data.next_page_token) {
+            setTimeout(() => {
+                fetchRestaurants(response.data.next_page_token);
+            }, 5000); 
+        } else {
+            console.log('Fetching completed');
+            mongoose.connection.close();
+        }
 
-    } catch (err) {
-        console.error("Error:", err);
-    } finally {
+    } catch (error) {
+        console.error('Error fetching or saving restaurants:', error.message);
         mongoose.connection.close();
     }
 }
 
-fetchData();
+
+fetchRestaurants();
