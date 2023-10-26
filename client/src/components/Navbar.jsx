@@ -18,7 +18,7 @@ const Navbar = ({ role, setIsAuthenticated }) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarCollapse">
                     <div className="navbar-nav">
-                        <NavLink to="/" className="nav-item nav-link">Home</NavLink>
+                        <NavLink to="/login" className="nav-item nav-link">Home</NavLink>
                         <a href="/restaurant/search" className="nav-link nav-link">Restaurant</a>
                     </div>
                     <div className="navbar-nav ms-auto">
@@ -29,7 +29,8 @@ const Navbar = ({ role, setIsAuthenticated }) => {
                             </>
                         ) : (
                             <>
-                                <NavLink to="/login" exact={true} className="btn btn-outline-dark me-3">Login</NavLink>
+                                <NavLink to="/login" exact={true} className="btn btn-outline-primary">Login</NavLink>
+                                <div style={{ margin: '7px' }}></div>
                                 <NavLink to="/register" className="btn btn-outline-primary">Register</NavLink>
                             </>
                         )}

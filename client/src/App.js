@@ -1,7 +1,10 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import AboutUs from "./components/AboutUs";
 import LoginForm from "./components/LoginForm";
+import ContactUs from "./components/ContactUs";
 import RegisterForm from "./components/RegisterForm";
+import TAndC from "./components/TAndC";
 import GuestPage from "./views/GuestPage";
 import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
@@ -28,6 +31,9 @@ function App() {
                 <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
+                <Route path="/aboutus" element={<AboutUs/>}/>
+                <Route path="/contactus" element={<ContactUs/>}/>
+                <Route path="/tandc" element={<TAndC/>}/>
             </Routes>
             <Footer />
       </div>

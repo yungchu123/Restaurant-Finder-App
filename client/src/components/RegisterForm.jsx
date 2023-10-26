@@ -72,7 +72,7 @@ const RegisterForm = () => {
                                 checked={role === "restaurateur"}
                                 onChange={e => setRole(e.target.value)}
                                 id="restaurateur"/>
-                        <label class="form-check-label" for="restaurateur">Restaurateur</label>
+                        <label class="form-check-label" for="restaurateur">Restaurant Manager</label>
                     </div>
                 </div>
             </div>
