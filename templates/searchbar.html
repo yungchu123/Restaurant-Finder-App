@@ -1,0 +1,4 @@
+{% if not request.user.userprofile.is_manager %}
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Singapore 680431 & Singapore 689673">
+{% endif %}
+<!--some work probably need to be done here for the search bar to actually work-->
