@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Register a Restaurant</h1>
+<form method="post" action="{% url 'register_restaurant' %}">
+    {% csrf_token %}
+    <label for="restaurant_name">Restaurant Name:</label>
+    <input type="text" name="restaurant_name" id="restaurant_name" required style="width: 300px;">
+    <!-- Hidden input to store the place_id -->
+    <input type="hidden" name="place_id" id="place_id">
+    <button type="submit">Register</button>
+</form>
+
+<!-- Check if the restaurant exists and show a popup accordingly -->
+{% if restaurant_exists %}
+    <div id="popup" class="popup">
+        <span class="popup-content">This restaurant already exists!</span>
+    </div>
+{% endif %}
+
+<!-- Include the Google Places Autocomplete script -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5QT73H-2TdL7JXjjZOg_FzRzwF_4nFhk&libraries=places&callback=init"></script>
+
+<script>
+    // Initialize the Google Places Autocomplete for the restaurant_name input
+    function initAutocomplete() {
+        var input = document.getElementById('restaurant_name');
+        var autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ['establishment'],
+            componentRestrictions: { country: 'SG' } // Restrict to Singapore
+        });
+
+        autocomplete.addListener("place_changed", function () {
+            var place = autocomplete.getPlace();
+            if (place && place.place_id) {
+                document.getElementById('place_id').value = place.place_id;
+            }
+        });
+    }
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+</script>
+</div>
+{% endblock %}
+In this template, a hidden input field with the name "place_id" is added to store the selected place's place_id. When a place is selected from the Autocomplete widget, the place_id is set using JavaScript. When the form is submitted, the place_id will be included in the POST request, and your Django view will use it to fetch details of the selected place.
+
+
+
+
+
