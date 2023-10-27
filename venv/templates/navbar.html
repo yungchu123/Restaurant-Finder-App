@@ -1,0 +1,44 @@
+<nav>
+    <ul>
+        <h3>GAYSTRO</h3>
+        {% if request.user.userprofile.is_manager %}
+            <a href="http://127.0.0.1:8000/manage/">Home</a>
+        {% else %}
+            <a href="http://127.0.0.1:8000/restaurants">Home</a>
+        {% endif %}
+        {% if not request.user.userprofile.is_manager %}
+            <a href="http://127.0.0.1:8000/restaurants">Restaurants</a>
+            <a href="http://127.0.0.1:8000/">Favourites</a>
+        {% endif %}
+        <a href="{% url 'login' %}" onclick="checkLoggedIn()">Log In</a>
+        <a href="register">Sign Up</a> 
+        {% if request.user.userprofile.is_manager %}
+            <a href="http://127.0.0.1:8000/register-restaurant/">Register Restaurant</a>
+        {% endif %}
+    </ul>
+</nav>
+<!-- Check if the user is logged in and redirect if not -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function checkLoggedIn() {
+        return $.ajax({
+            url: "{% url 'login' %}"
+        });
+    }
+
+    // Attach an event listener to the "Restaurants" link
+    $(document).ready(function() {
+        $('a[href="http://127.0.0.1:8000/restaurants/"]').click(function(event) {
+            event.preventDefault();
+
+            checkLoggedIn().done(function(data) {
+                if (data.is_authenticated) {
+                    // User is already logged in, navigate to the "Restaurants" page
+                    window.location.href = "http://127.0.0.1:8000/restaurants/";
+                } else {
+                    window.location.href = "{% url 'login' %}"; // Redirect to the login page
+                }
+            });
+        });
+    });
+</script>
