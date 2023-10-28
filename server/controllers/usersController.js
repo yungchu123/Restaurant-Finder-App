@@ -14,6 +14,30 @@ const getAllUsers = asyncHandler(async (req, res) => {
     res.json(users)
 })
 
+// @desc Login user
+// @route POST /users/login
+// @access Private
+const loginUser = asyncHandler(async (req, res) => {
+    console.log(req.body)
+    const { username, password } = req.body
+
+    if(!username || !password){
+        throw new Error('All fields are required')
+    }
+
+    const user = await User.findOne({username: { $eq: username } })
+    if (!user) {
+        throw new CustomError(400, 'No Users found')
+    }
+    
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if (!passwordMatch) {
+        throw new CustomError(401, 'Password is incorrect')
+    }
+
+    res.json(user)
+})
+
 // @desc Create new user
 // @route POST /users
 // @access Private
@@ -131,6 +155,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 module.exports = {
     getAllUsers,
+    loginUser,
     createNewUser,
     updateUser,
     deleteUser

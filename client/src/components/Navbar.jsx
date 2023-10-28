@@ -18,8 +18,8 @@ const Navbar = ({ role, setIsAuthenticated }) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarCollapse">
                     <div className="navbar-nav">
-                        <NavLink to="/login" className="nav-item nav-link">Home</NavLink>
-                        <a href="/restaurant/search" className="nav-link nav-link">Restaurant</a>
+                        <NavLink to="/" className="nav-item nav-link">Home</NavLink>
+                        <NavLink to="/restaurant/search" className="nav-link nav-link">Restaurant</NavLink>
                     </div>
                     <div className="navbar-nav ms-auto">
                         { role !== "guest" ? ( 

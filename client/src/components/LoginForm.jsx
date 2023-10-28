@@ -1,17 +1,25 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
-const LoginForm = ({setIsAuthenticated}) => {
+const LoginForm = ({setIsAuthenticated, setUser}) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('10001');
     const [password, setPassword] = useState('password');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (username === "10001" && password === "password") {
-            setIsAuthenticated(true)
-            navigate('/')
-        }
+        axios.post('http://localhost:5000/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
+            .then(response => {
+                console.log("Login Success")
+                console.log('Response data:', response.data);
+                setIsAuthenticated(true)
+                setUser(response.data)
+                navigate('/')
+            })
+            .catch(error => {
+                console.error('Login Error:', error);
+            });
     }
 
     return (

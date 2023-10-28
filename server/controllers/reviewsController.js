@@ -17,18 +17,27 @@ const getAllReviews = asyncHandler(async (req, res) => {
 // @desc Create new review
 // @route POST /reviews
 // @access Private
+const createNewReview = asyncHandler(async (req, res) => {
 
+})
 
 // @desc Update a review
 // @route PATCH /reviews
 // @access Private
+const updateReview = asyncHandler(async (req, res) => {
 
+})
 
 // @desc Delete a review
 // @route DELETE /reviews
 // @access Private
+const deleteReview = asyncHandler(async (req, res) => {
 
+})
 
 module.exports = {
-    getAllReviews
+    getAllReviews,
+    createNewReview,
+    updateReview,
+    deleteReview
 }
