@@ -28,7 +28,7 @@ function App() {
             <Navbar/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
-                <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} />} />
+                <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/aboutus" element={<AboutUs/>}/>

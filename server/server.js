@@ -1,9 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
+var cors = require('cors');
 require("dotenv").config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const app = express();
+
+// Configure CORS to allow requests from frontend react app
+app.use(cors());
 
 app.use(express.json())
 
@@ -25,9 +29,9 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
-app.use("/users", require("./routes/userRoutes"));
-app.use("/restaurants", require("./routes/restaurantRoutes"));
-app.use("/reviews", require("./routes/reviewRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/restaurants", require("./routes/restaurantRoutes"));
+app.use("/api/reviews", require("./routes/reviewRoutes"));
 
 // Start Server
 app.listen(PORT, () => {
