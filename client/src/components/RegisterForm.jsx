@@ -1,16 +1,49 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
-const RegisterForm = () => {
+const RegisterForm = ({setIsAuthenticated, setUser}) => {
+    const navigate = useNavigate();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('customer');
     const [email, setEmail] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(firstName, lastName, username, password, role, email)
+    
+        if (!firstName || !lastName || !username || !password || !email) {
+            setErrorMsg("All fields are required")
+            return
+        }
+
+        // Create new user in DB
+        axios.post(
+            'http://localhost:5000/api/users/', 
+            JSON.stringify({ firstName, lastName, username, password, role, email }), 
+            { headers: {'Content-Type': 'application/json'} }
+            )
+            .then(response => {
+                console.log("New User Created Successfully")
+                console.log('Response data:', response.data);
+                setIsAuthenticated(true)
+                setUser(response.data)
+                navigate('/')
+            })
+            .catch(error => {
+                if (error.response.data.error) {
+                    console.error(`Register Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                    setErrorMsg(error.response.data.error)
+                } else {
+                    console.error(`Register Error: ${error}`)
+                    setErrorMsg("User creation unsuccessful")
+                }
+            });
+
+        setErrorMsg("")
     }
 
   
@@ -18,6 +51,7 @@ const RegisterForm = () => {
         <>
         <form class="bg-light p-5" onSubmit={handleSubmit}>
             <h2 class="mb-4">Register</h2>
+            { errorMsg && <div class="alert alert-danger" role="alert"> {errorMsg} </div> }
             <div class="row mb-3">
                 <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
                 <div class="col-sm-10">

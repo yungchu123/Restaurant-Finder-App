@@ -29,7 +29,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
-                <Route path="/register" element={<RegisterForm />} />
+                <Route path="/register" element={<RegisterForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/aboutus" element={<AboutUs/>}/>
                 <Route path="/contactus" element={<ContactUs/>}/>

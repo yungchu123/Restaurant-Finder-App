@@ -4,11 +4,19 @@ import axios from 'axios';
 
 const LoginForm = ({setIsAuthenticated, setUser}) => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('10001');
+    const [username, setUsername] = useState('garygay');
     const [password, setPassword] = useState('password');
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
+        if (!username || !password) {
+            setErrorMsg("All fields are required")
+            return
+        }
+
+        // Authenticate Login
         axios.post('http://localhost:5000/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
             .then(response => {
                 console.log("Login Success")
@@ -18,14 +26,18 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
                 navigate('/')
             })
             .catch(error => {
-                console.error('Login Error:', error);
+                console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                setErrorMsg("Invalid Username or Password")
             });
+        
+        setErrorMsg("")
     }
 
     return (
         <>
         <form class="bg-light p-5" onSubmit={handleLogin}>
             <h2 class="mb-4">Login</h2>
+            { errorMsg && <div class="alert alert-danger" role="alert"> {errorMsg} </div> }
             <div class="row mb-3">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
                 <div class="col-sm-10">
