@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 const UpdateProfilePage = ({user, setUser}) => {
     const navigate = useNavigate();
@@ -8,9 +9,16 @@ const UpdateProfilePage = ({user, setUser}) => {
     const [lastName, setLastName] = useState(user.lastName);
     const [email, setEmail] = useState(user.email);
 
-    const updateProfile = () => {
-        setUser({firstName, lastName, email, role:"customer"})
-        navigate('/profile')
+    const updateProfile = async () => {
+        axios.patch(`http://localhost:5000/api/users/${user._id}`, JSON.stringify({ firstName, lastName, email }), { headers: {'Content-Type': 'application/json'} })
+        .then(response => {
+            console.log("User updated. New user: ", response.data)
+            setUser(response.data)
+            navigate('/profile')
+        })
+        .catch(error => {
+            console.error(`Update User Error: ${error.response.data.error} | Status: ${error.response.status}`);
+        });
     }
 
     const cancel = () => {
