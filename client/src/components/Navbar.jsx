@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ role, setIsAuthenticated }) => {
+const Navbar = ({ role, setIsAuthenticated, setUser }) => {
     const navigate = useNavigate();
     
     const logout = () => {
+        localStorage.setItem('loginToken', "")
         setIsAuthenticated(false)
+        setUser({})
         navigate('/')
     }
 
