@@ -9,9 +9,22 @@ const CustomError = require('../utils/customError')
 const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find().select('-password').lean()
     if (!users?.length) {
-        throw CustomError(400, 'No Users found')
+        throw new CustomError(400, 'No Users found')
     }
     res.json(users)
+})
+
+// @desc Get a user
+// @route GET /user/:id
+// @access Private
+const getUser = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ _id: { $eq: req.params.id} }).select('-password').lean()
+    if (!user) {
+        res.status(400).json({ error: 'No Users found'})
+        throw new CustomError(400, 'No Users found')
+    }
+    console.log(user)
+    res.json(user)
 })
 
 // @desc Login user
@@ -22,16 +35,19 @@ const loginUser = asyncHandler(async (req, res) => {
     const { username, password } = req.body
 
     if(!username || !password){
+        res.status(400).json({ error: 'All fields are required' })
         throw new Error('All fields are required')
     }
 
     const user = await User.findOne({username: { $eq: username } })
     if (!user) {
+        res.status(400).json({ error: 'No Users found' })
         throw new CustomError(400, 'No Users found')
     }
     
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
+        res.status(401).json({ error: 'Password is incorrect' })
         throw new CustomError(401, 'Password is incorrect')
     }
 
@@ -45,8 +61,9 @@ const createNewUser = asyncHandler(async (req, res) => {
     const{firstName, lastName, username, password, email, role} = req.body
     
     // Missing fields
-    console.log(req.body)
+    console.log("Creating new user")
     if(!firstName || !lastName || !username || !password || !email || !role){
+        res.status(400).json({ error: 'All fields are required' })
         throw new CustomError(400, 'All fields are required')
     }
 
@@ -57,8 +74,10 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     if (duplicateUser) {
         if (duplicateUser.username === username) {
+            res.status(409).json({ error: 'Username is taken' })
             throw new CustomError(409, 'Duplicate username')
         } else {
+            res.status(409).json({ error: 'Email is taken' })
             throw new CustomError(409, 'Duplicate email')
         }
     }
@@ -71,43 +90,32 @@ const createNewUser = asyncHandler(async (req, res) => {
     const user = await User.create(userObject)
 
     if (user) {
-        res.status(201).json({message: `New user ${username} created`})
+        console.log(`New user ${username} created`)
+        console.log(user)
+        res.status(201).json(user)
     } else {
         throw new CustomError(400, 'Invalid user data received')
     }
 })
 
 // @desc Update a user
-// @route PATCH /users
+// @route PATCH /users/:id
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const {id, firstName, lastName, username, password, email, role} = req.body
+    const {firstName, lastName, password, email} = req.body
 
-    if(!id|| !firstName || !lastName || !username || !password || !email || !role){
+    // Missing fields
+    console.log("Updating user")
+    if(!firstName || !lastName || !email){
+        res.status(400).json({ error: 'All fields are required' })
         throw new CustomError(400, 'All fields are required')
-    }
-
-    // Check for duplicates
-    const duplicateUser = await User.findOne({
-        $or:[{username}, {email}],
-        _id:{$ne:id}
-    }).lean().exec()
-
-    if (duplicateUser) {
-        if (duplicateUser.username === username) {
-            throw new CustomError(409, 'Duplicate username')
-        } else {
-            throw new CustomError(409, 'Duplicate email')
-        }
     }
 
     // Prepare updated fields
     const updatedFields = {
         firstName,
         lastName,
-        username,
-        email,
-        role
+        email
     }
 
     if (password){
@@ -118,43 +126,39 @@ const updateUser = asyncHandler(async (req, res) => {
 
     // Update user and return updated document
     const updatedUser = await User.findOneAndUpdate(
-        {_id:id},
+        {_id: req.params.id},
         {$set: updatedFields},
         {new: true, runValidators: true}
     )
 
     if (!updatedUser){
+        res.status(400).json({ error: 'User not found' })
         throw new CustomError(400, 'User not found')
     }
 
-    res.json({message: `${updatedUser.username} updated`})
+    console.log(updatedUser)
+    res.json(updatedUser)
 })
 
 // @desc Delete a user
-// @route DELETE /users
+// @route DELETE /users/:id
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
-    const {id} = req.body
+    const user = await User.findOneAndDelete({_id: req.params.id})
 
-    if (!id){
-        throw new CustomError(400, 'User ID required')
-    }
-
-    const user = await User.findById(id).exec()
-
-    if (!user){
+    if (!user) {
+        res.status(400).json({ error: 'User not found'})
         throw new CustomError(400, 'User not found')
-    }
+    } 
 
-    const result = await user.deleteOne()
-
-    const reply = `Username ${result.username} with ID ${result.id} has been deleted`
-
-    res.json(reply)
+    const message = `Username ${user.username} with ID ${user.id} has been deleted`
+    console.log(message)
+    res.json(message)
 })
 
 module.exports = {
     getAllUsers,
+    getUser,
     loginUser,
     createNewUser,
     updateUser,
