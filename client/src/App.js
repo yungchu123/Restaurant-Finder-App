@@ -10,22 +10,37 @@ import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
 import RestaurantSearchPage from "./views/RestaurantSearchPage";
 import { Routes, Route} from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 function App() {
-
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState({
-        firstName: "John",
-        lastName: "Doe",
-        email: "johndoe@gmail.com",
-        role: "customer"
-    })
+    const [user, setUser] = useState({})
+
+    useEffect(() => {
+      // Check for the user's login status when the component mounts
+      const loginToken = localStorage.getItem('loginToken');
+  
+      if (loginToken) {
+          (async () => {
+            axios.get(`http://localhost:5000/api/users/${loginToken}`)
+            .then(response => {
+                console.log('User data:', response.data);
+                setIsAuthenticated(true)
+                setUser(response.data)
+            })
+            .catch(error => {
+                console.error(`User data not found: ${error.response} | Status: ${error.response.status}`);
+                setIsAuthenticated(false)
+            });
+          })();
+      }
+    }, []);
 
 
     if (!isAuthenticated) return (
       <div className="App"> 
-            <Navbar/>
+            <Navbar setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
@@ -40,7 +55,7 @@ function App() {
     ) 
     return (
       <div className="App"> 
-            <Navbar role={user.role} setIsAuthenticated={setIsAuthenticated}/>
+            <Navbar role={user.role} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/profile" element={<ProfilePage user={user}/>} />

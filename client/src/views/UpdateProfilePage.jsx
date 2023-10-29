@@ -9,7 +9,7 @@ const UpdateProfilePage = ({user, setUser}) => {
     const [email, setEmail] = useState(user.email);
 
     const updateProfile = () => {
-        setUser({firstName, lastName, email})
+        setUser({firstName, lastName, email, role:"customer"})
         navigate('/profile')
     }
 

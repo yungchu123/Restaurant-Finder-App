@@ -31,6 +31,7 @@ const RegisterForm = ({setIsAuthenticated, setUser}) => {
                 console.log('Response data:', response.data);
                 setIsAuthenticated(true)
                 setUser(response.data)
+                localStorage.setItem('loginToken', response.data._id)
                 navigate('/')
             })
             .catch(error => {

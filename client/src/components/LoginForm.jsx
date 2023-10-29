@@ -21,8 +21,10 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
             .then(response => {
                 console.log("Login Success")
                 console.log('Response data:', response.data);
+
                 setIsAuthenticated(true)
-                setUser(response.data)
+                setUser(response.data)     
+                localStorage.setItem('loginToken', response.data._id) // Store userid as login token in local storage
                 navigate('/')
             })
             .catch(error => {

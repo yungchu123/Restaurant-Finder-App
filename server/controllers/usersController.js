@@ -14,6 +14,18 @@ const getAllUsers = asyncHandler(async (req, res) => {
     res.json(users)
 })
 
+// @desc Get a user
+// @route GET /user/:id
+// @access Private
+const getUser = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ _id: { $eq: req.params.id} }).select('-password').lean()
+    if (!user) {
+        throw CustomError(400, 'No Users found')
+    }
+    console.log(user)
+    res.json(user)
+})
+
 // @desc Login user
 // @route POST /users/login
 // @access Private
@@ -22,16 +34,19 @@ const loginUser = asyncHandler(async (req, res) => {
     const { username, password } = req.body
 
     if(!username || !password){
+        res.status(400).json({ error: 'All fields are required' })
         throw new Error('All fields are required')
     }
 
     const user = await User.findOne({username: { $eq: username } })
     if (!user) {
+        res.status(400).json({ error: 'No Users found' })
         throw new CustomError(400, 'No Users found')
     }
     
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
+        res.status(401).json({ error: 'Password is incorrect' })
         throw new CustomError(401, 'Password is incorrect')
     }
 
@@ -57,8 +72,10 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     if (duplicateUser) {
         if (duplicateUser.username === username) {
+            res.status(409).json({ error: 'Username is taken' })
             throw new CustomError(409, 'Duplicate username')
         } else {
+            res.status(409).json({ error: 'Email is taken' })
             throw new CustomError(409, 'Duplicate email')
         }
     }
@@ -71,7 +88,8 @@ const createNewUser = asyncHandler(async (req, res) => {
     const user = await User.create(userObject)
 
     if (user) {
-        res.status(201).json({message: `New user ${username} created`})
+        console.log(`New user ${username} created`)
+        res.status(201).json(user)
     } else {
         throw new CustomError(400, 'Invalid user data received')
     }
@@ -155,6 +173,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 module.exports = {
     getAllUsers,
+    getUser,
     loginUser,
     createNewUser,
     updateUser,
