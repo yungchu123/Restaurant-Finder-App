@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const asyncHandler = require('express-async-handler')
 const CustomError = require('../utils/customError')
 
-
 const ApiResponse = mongoose.model('ApiResponse', mongoose.Schema({}, { strict: false }));
 
 // @desc Get all restaurants in database
@@ -15,7 +14,6 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
     }
     res.json(restaurants)
 })
-
 
 module.exports = {
     getAllRestaurants

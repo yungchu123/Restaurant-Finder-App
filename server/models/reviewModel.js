@@ -2,12 +2,11 @@ const mongoose = require("mongoose");
 
 const ReviewSchema = new mongoose.Schema({
     restaurantId: String,
-    reviewerId: String,
-    reviewerName: String,
+    author_name: String,
     rating: Number,
     text: String,
-    language: String,
+    language: String
 });
 
-const Review = mongoose.model("Review", ReviewSchema);
+const Review = mongoose.model('Review', ReviewSchema);
 module.exports = Review;
