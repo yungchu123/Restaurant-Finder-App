@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 var cors = require('cors');
 require("dotenv").config();
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 // Configure CORS to allow requests from frontend react app

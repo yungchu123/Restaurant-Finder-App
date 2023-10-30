@@ -18,8 +18,6 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
 
         // Authenticate Login
         axios.post('http://localhost:5000/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
-
-        axios.post('http://localhost:5001/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
             .then(response => {
                 console.log("Login Success")
                 console.log('Response data:', response.data);
@@ -30,7 +28,8 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
                 navigate('/')
             })
             .catch(error => {
-                console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                if (error.response) console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                else console.log(`Login Error: ${error}`)
                 setErrorMsg("Invalid Username or Password")
             });
         

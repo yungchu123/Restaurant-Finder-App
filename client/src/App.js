@@ -33,7 +33,8 @@ function App() {
                 setUser(response.data)
             })
             .catch(error => {
-                console.error(`User data not found: ${error.response} | Status: ${error.response.status}`);
+                if (error.response) console.error(`User data not found: ${error.response} | Status: ${error.response.status}`);
+                else console.log(`Error: ${error}`)
                 setIsAuthenticated(false)
             });
           })();
@@ -67,6 +68,8 @@ function App() {
                 <Route path="/profile" element={<ProfilePage user={user}/>} />
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
+                <Route path="/restaurant/page" element={<RestaurantPage />}/> 
+                <Route path="/reservationcard" element={<ReservationCard/>}/>
             </Routes>
             <Footer />
       </div>
