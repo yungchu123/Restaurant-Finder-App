@@ -4,6 +4,9 @@ import AboutUs from "./components/AboutUs";
 import LoginForm from "./components/LoginForm";
 import ContactUs from "./components/ContactUs";
 import RegisterForm from "./components/RegisterForm";
+import ForgetPassword from "./components/ForgetPassword";
+import ReservationCard from "./components/ReservationCard";
+import RestaurantPage from "./views/RestaurantPage";
 import TAndC from "./components/TAndC";
 import GuestPage from "./views/GuestPage";
 import ProfilePage from "./views/ProfilePage";
@@ -49,6 +52,9 @@ function App() {
                 <Route path="/aboutus" element={<AboutUs/>}/>
                 <Route path="/contactus" element={<ContactUs/>}/>
                 <Route path="/tandc" element={<TAndC/>}/>
+                <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
+                <Route path="/restaurant/page" element={<RestaurantPage />}/> 
+                <Route path="/reservationcard" element={<ReservationCard/>}/>
             </Routes>
             <Footer />
       </div>

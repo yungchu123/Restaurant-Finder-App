@@ -5,6 +5,7 @@ const RestaurantCard = ({restaurant}) => {
 
     return (
         <>
+            <a href="/restaurant/page" style={{ textDecoration: 'none' }}>
             <div class="card" style={{width: "18rem"}}>
             <img src={logo} class="card-img-top" alt="..."/>
             <div class="card-body">
@@ -18,8 +19,11 @@ const RestaurantCard = ({restaurant}) => {
                 </p>
             </div>
             </div>
+
+            </a>
         </>
     )
 }
 
 export default RestaurantCard
+

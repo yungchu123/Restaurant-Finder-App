@@ -45,7 +45,7 @@ const ContactUs = () => {
                 <div class="row mb-3">
                     <label for="subject" class="col-sm-2 col-form-label">Subject</label>
                     <div class="col-sm-10">
-                        <select class="form-select" id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Example select with button addon">
+                        <select class="form-select" id="subject" value={subject} onChange={(e) => setSubject(e.target.value)}>
                         <option selected>Choose</option>
                         <option value="1">Techincal Issue </option>
                         <option value="2">Query related to reservation</option>
@@ -63,6 +63,7 @@ const ContactUs = () => {
                         </textarea>
                     {/* </div> */}
                 </div>
+                {/* Forgot to add the submit button */}
 
                 
 
