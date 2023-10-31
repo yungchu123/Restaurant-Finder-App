@@ -16,6 +16,8 @@ mongoose.connection.on('disconnected', () => {
     console.log('Disconnected from MongoDB');
 });
 
+
+
 // create a restaurant model
 const restaurantSchema = new mongoose.Schema({}, { strict: false });
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
@@ -24,13 +26,29 @@ const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 const reviewSchema = new mongoose.Schema({
     restaurantId: String,
     restaurantName: String,
-    author_name: String,
+    authorId: String,
+    authorName: String,
     rating: Number,
     text: String,
     language: String
 });
 
 const Review = mongoose.model('Review', reviewSchema);
+
+// Clearing the collection before API calling
+async function clearCollection() {
+    try {
+      // Use deleteMany to remove all documents in the collection
+      const deleteReviewsResult = await Review.deleteMany({});
+      console.log(`Deleted ${deleteReviewsResult.deletedCount} documents from the collection.`);
+
+      const deleteRestaurantsResult = await Restaurant.deleteMany({});
+      console.log(`Deleted ${deleteRestaurantsResult.deletedCount} documents from the collection.`);
+    } catch (error) {
+      console.error('Error clearing collection:', error.message);
+    }
+}
+
 
 const SINGAPORE_LOCATION_LIST = [
     '1.345653,103.736804',   // Jurong East
@@ -95,7 +113,8 @@ async function fetchReviews(restaurantId) {
             const reviewData = {
                 restaurantId: restaurantId,
                 restaurantName: name,
-                author_name: review.author_name,
+                authorId: null,
+                authorName: review.author_name,
                 rating: review.rating,
                 text: review.text,
                 language: review.language
@@ -116,6 +135,7 @@ async function fetchReviews(restaurantId) {
 async function main() {
     try {
         await connectToMongoDB();
+        await clearCollection();
         await fetchRestaurantsForAllLocations();
 
         mongoose.connection.close();

@@ -6,7 +6,7 @@ require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-const dataPopulationProcess = require('../scripts/test.js');  
+const dataPopulationProcess = require('./api.js');  
 
 // configure CORS to allow requests from frontend react app
 app.use(cors());

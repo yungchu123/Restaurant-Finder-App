@@ -13,6 +13,8 @@ router
   .patch(usersController.updateUser)
   .delete(usersController.deleteUser);
 
+router.get('/:id/reviews', usersController.getUserReviews)
+
 router.post('/login', usersController.loginUser)
 
 module.exports = router;

@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const ReviewSchema = new mongoose.Schema({
     restaurantId: String,
     restaurantName: String,
-    author_name: String,
+    authorId: String,
+    authorName: String,
     rating: Number,
     text: String,
-    language: String
+    language: { type: String, default: "en" }
 });
-
 const Review = mongoose.model('Review', ReviewSchema);
 module.exports = Review;

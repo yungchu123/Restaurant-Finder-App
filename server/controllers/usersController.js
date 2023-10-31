@@ -1,4 +1,5 @@
 const User = require('../models/userModel')
+const Review = require('../models/reviewModel')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 const CustomError = require('../utils/customError')
@@ -9,22 +10,35 @@ const CustomError = require('../utils/customError')
 const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find().select('-password').lean()
     if (!users?.length) {
+        res.status(400).json({ error: 'No Users found'})
         throw new CustomError(400, 'No Users found')
     }
     res.json(users)
 })
 
 // @desc Get a user
-// @route GET /user/:id
+// @route GET /users/:id
 // @access Private
 const getUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ _id: { $eq: req.params.id} }).select('-password').lean()
     if (!user) {
-        res.status(400).json({ error: 'No Users found'})
-        throw new CustomError(400, 'No Users found')
+        res.status(400).json({ error: 'No User found'})
+        throw new CustomError(400, 'No User found')
     }
     console.log(user)
     res.json(user)
+})
+
+// @desc Get all reviews from the user
+// @route GET /users/:id/reviews
+// @access Private
+const getUserReviews = asyncHandler(async (req, res) => {
+    const reviews = await Review.find({ _id: {$eq: req.params.userId} }).lean()
+    if (!reviews?.length) {
+        res.status(400).json({ error: 'No reviews found'})
+        throw new CustomError(400, 'No reviews found')
+    }
+    res.json(reviews)
 })
 
 // @desc Login user
@@ -159,6 +173,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 module.exports = {
     getAllUsers,
     getUser,
+    getUserReviews,
     loginUser,
     createNewUser,
     updateUser,
