@@ -53,27 +53,29 @@ const createNewReview = asyncHandler(async (req, res) => {
         throw new CustomError(409, 'Review has been made for this restaurant before')
         
     }
-    const restaurantName = null
-    const authorName = null
+    let restaurantName = null
+    let authorName = null
 
     // Get restaurantName and authorName
-    const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurant/${restaurantId}`);
-    if (restaurantResponse.data.isValid) {
+    try {
+        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
         restaurantName = restaurantResponse.data.name
-    } else {
+    } catch (error) {
         // restaurantId does not exist
         res.status(400).json({ error: 'No restaurant found' });
         throw new CustomError(400, 'No restaurant found')
     }
+    
 
-    const userResponse = await axios.get(`http://localhost:5000/api/user/${authorId}`);
-    if (userResponse.data.isValid) {
-        authorName = restaurantResponse.data.firstName + ' ' + restaurantResponse.data.lastName
-    } else {
+    try {
+        const userResponse = await axios.get(`http://localhost:5000/api/users/${authorId}`);
+        authorName = userResponse.data.firstName + ' ' + userResponse.data.lastName
+    } catch (error) {
         // authorId does not exist
         res.status(400).json({ error: 'No user found' });
         throw new CustomError(400, 'No user found')
     }
+   
     
     // Create and store new user
     const reviewObject = {restaurantId,restaurantName,authorId,authorName,rating,text,language}

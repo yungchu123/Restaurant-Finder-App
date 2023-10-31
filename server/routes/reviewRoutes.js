@@ -5,11 +5,11 @@ const reviewsController = require("../controllers/reviewsController");
 router
   .route("/")
   .get(reviewsController.getAllReviews)
+  .post(reviewsController.createNewReview)
 
 router
   .route("/:id")
   .get(reviewsController.getReview)
-  .post(reviewsController.createNewReview)
   .patch(reviewsController.updateReview)
   .delete(reviewsController.deleteReview);
 

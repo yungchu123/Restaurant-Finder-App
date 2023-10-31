@@ -6,7 +6,7 @@ require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-const dataPopulationProcess = require('./api.js');  
+//const dataPopulationProcess = require('./api.js');  
 
 // configure CORS to allow requests from frontend react app
 app.use(cors());
@@ -20,7 +20,7 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
     console.log("Connected to MongoDB Atlas");
-    await dataPopulationProcess();
+    //await dataPopulationProcess();
 
   } catch (error) {
     console.error("Failed to connect to MongoDB Atlas", error);

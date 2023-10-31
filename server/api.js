@@ -1,22 +1,36 @@
+require('dotenv').config();
 const axios = require('axios');
 const mongoose = require('mongoose');
-require('dotenv').config();
 
+/*
 async function connectToMongoDB() {
     try {
-        await mongoose.connect(process.env.DATABASE_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect('mongodb+srv://ngshangyau:I4qiElFHx5alSbIu@cluster0.eaqnxlm.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
         console.log('Connected to MongoDB');
     } catch (err) {
         console.error('Failed to connect to MongoDB', err);
         process.exit(1); 
     }
 }
+*/
+
+const connectToMongoDB = async () => {
+    try {
+      await mongoose.connect(process.env.DATABASE_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log("Connected to MongoDB Atlas");
+  
+    } catch (error) {
+      console.error("Failed to connect to MongoDB Atlas", error);
+      process.exit(1); 
+    }
+  };
 
 mongoose.connection.on('disconnected', () => {
     console.log('Disconnected from MongoDB');
 });
-
-
 
 // create a restaurant model
 const restaurantSchema = new mongoose.Schema({}, { strict: false });
@@ -75,8 +89,9 @@ async function fetchRestaurants(location, nextPageToken) {
                 ...restaurant
             });
             await restaurantInstance.save();
+            const savedRestaurantId = restaurantInstance._id;
 
-            await(fetchReviews(restaurant.place_id));
+            await(fetchReviews(restaurant.place_id, savedRestaurantId));
         }
 
         if (response.data.next_page_token) {
@@ -97,11 +112,11 @@ async function fetchRestaurantsForAllLocations() {
     }
 }
 
-async function fetchReviews(restaurantId) {
+async function fetchReviews(placeId, savedRestaurantId) {
     try {
         const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
             params: {
-                place_id: restaurantId,
+                place_id: placeId,
                 key: process.env.GOOGLE_API_KEY
             }
         });
@@ -111,7 +126,7 @@ async function fetchReviews(restaurantId) {
 
         const reviewPromises = reviews.map(review => {
             const reviewData = {
-                restaurantId: restaurantId,
+                restaurantId: savedRestaurantId,
                 restaurantName: name,
                 authorId: null,
                 authorName: review.author_name,
@@ -125,15 +140,16 @@ async function fetchReviews(restaurantId) {
 
         await Promise.all(reviewPromises);
 
-        console.log(`Fetching reviews completed for restaurantId: ${restaurantId}`);
+        console.log(`Fetching reviews completed for restaurantId: ${savedRestaurantId}`);
 
     } catch (error) {
-        console.error(`Error fetching or saving reviews for restaurantId: ${restaurantId}`, error);
+        console.error(`Error fetching or saving reviews for restaurantId: ${savedRestaurantId}`, error);
     }
 }
 
 async function main() {
     try {
+        console.log('DATABASE_URI:', process.env.DATABASE_URI);
         await connectToMongoDB();
         await clearCollection();
         await fetchRestaurantsForAllLocations();

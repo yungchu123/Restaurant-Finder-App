@@ -33,7 +33,8 @@ const getUser = asyncHandler(async (req, res) => {
 // @route GET /users/:id/reviews
 // @access Private
 const getUserReviews = asyncHandler(async (req, res) => {
-    const reviews = await Review.find({ _id: {$eq: req.params.userId} }).lean()
+    const reviews = await Review.find({ authorId: {$eq: req.params.id} }).lean()
+
     if (!reviews?.length) {
         res.status(400).json({ error: 'No reviews found'})
         throw new CustomError(400, 'No reviews found')
