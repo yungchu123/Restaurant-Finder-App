@@ -1,3 +1,5 @@
+// run this script to reset the database and re-populate it with restaurants and reviews from Google Places API
+
 const axios = require('axios');
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -14,9 +16,11 @@ async function connectToMongoDB() {
 mongoose.connection.on('disconnected', () => {
     console.log('Disconnected from MongoDB');
 });
+
 // create a restaurant model
 const restaurantSchema = new mongoose.Schema({}, { strict: false });
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
+
 // create a review model
 const reviewSchema = new mongoose.Schema({
     restaurantId: String,
@@ -29,6 +33,7 @@ const reviewSchema = new mongoose.Schema({
 });
 const Review = mongoose.model('Review', reviewSchema);
 
+
 const SINGAPORE_LOCATION_LIST = [
     '1.345653,103.736804',   // Jurong East
     '1.289307,103.824438',   // Tiong Bahru
@@ -37,17 +42,16 @@ const SINGAPORE_LOCATION_LIST = [
     '1.333879,103.843559'    // Toa Payoh
 ];
 
-// Clearing the collection before API calling
+// function to reset the database (delect all documents in the collections)
 async function clearCollection() {
     try {
-      // Use deleteMany to remove all documents in the collection
       const deleteReviewsResult = await Review.deleteMany({});
-      console.log(`Deleted ${deleteReviewsResult.deletedCount} documents from the collection.`);
+      console.log(`Deleted ${deleteReviewsResult.deletedCount} documents from the reviews collection.`);
 
       const deleteRestaurantsResult = await Restaurant.deleteMany({});
-      console.log(`Deleted ${deleteRestaurantsResult.deletedCount} documents from the collection.`);
+      console.log(`Deleted ${deleteRestaurantsResult.deletedCount} documents from the restaurants collection.`);
     } catch (error) {
-      console.error('Error clearing collection:', error.message);
+      console.error('Error clearing collections:', error.message);
     }
 }
 
@@ -84,6 +88,7 @@ async function fetchRestaurantsForAllLocations() {
         await fetchRestaurants(location);
     }
 }
+
 async function fetchReviews(placeId, savedRestaurantId) {
     try {
         const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
@@ -98,7 +103,8 @@ async function fetchReviews(placeId, savedRestaurantId) {
             const reviewData = {
                 restaurantId: savedRestaurantId,
                 restaurantName: name,
-                author_name: review.author_name,
+                authorId: null,
+                authorName: review.author_name,
                 rating: review.rating,
                 text: review.text,
                 language: review.language
@@ -111,6 +117,7 @@ async function fetchReviews(placeId, savedRestaurantId) {
         console.error(`Error fetching or saving reviews for restaurantId: ${savedRestaurantId}`, error);
     }
 }
+
 async function main() {
     try {
         await connectToMongoDB();
@@ -124,11 +131,3 @@ async function main() {
 }
 
 main();
-
-/*
-module.exports = main; 
-
-if (require.main === module) {
-    main();
-}
-*/
