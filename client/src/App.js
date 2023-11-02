@@ -6,7 +6,10 @@ import ContactUs from "./components/ContactUs";
 import RegisterForm from "./components/RegisterForm";
 import ForgetPassword from "./components/ForgetPassword";
 import ReservationCard from "./components/ReservationCard";
+import ViewReservationCard from "./components/ViewReservationCard";
 import RestaurantPage from "./views/RestaurantPage";
+import ReservationPage from "./views/ReservationPage";
+import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
 import TAndC from "./components/TAndC";
 import GuestPage from "./views/GuestPage";
 import ProfilePage from "./views/ProfilePage";
@@ -56,6 +59,9 @@ function App() {
                 <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
                 <Route path="/restaurant/page" element={<RestaurantPage />}/> 
                 <Route path="/reservationcard" element={<ReservationCard/>}/>
+                <Route path="/reservationpage" element={<ReservationPage/>}/>
+                <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
+                <Route path="/favouriterestaurant/page" element={<FavouriteRestaurantPage/>}/>
             </Routes>
             <Footer />
       </div>
@@ -70,6 +76,9 @@ function App() {
                 <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
                 <Route path="/restaurant/page" element={<RestaurantPage />}/> 
                 <Route path="/reservationcard" element={<ReservationCard/>}/>
+                <Route path="/reservationpage" element={<ReservationPage/>}/>
+                <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
+                <Route path="/favouriterestaurant/page" element={<FavouriteRestaurantPage/>}/>
             </Routes>
             <Footer />
       </div>

@@ -18,3 +18,10 @@
 .bi-star-fill {
     color: #f7c942;
 }
+
+
+.card-hover:hover {
+    background-color: lightgray; /* Change this to the color you prefer */
+    cursor: pointer; /* Change cursor to a pointer to indicate interactivity */
+  }
+  

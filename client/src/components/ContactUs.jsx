@@ -56,15 +56,25 @@ const ContactUs = () => {
                     </div>
                 </div>
                 {/* Cannot get them in a column */}
-                <div class="row mb-3">
-                    <label for="message" class="form-label">Message</label>
-                    {/* <div class="col-sm-10"> */}
-                        <textarea class="form-control" id="message" placeholder="Type here..." rows="3" defaultValue={message} onChange={e => setMessage(e.target.value)}>        
+                <div className="row mb-3">
+                    <label className="col-sm-2 col-form-label">Message</label>
+                    <div className="col-sm-10">
+                        <textarea
+                            className="form-control"
+                            id="message"
+                            placeholder="Type here..."
+                            rows="3"
+                            defaultValue={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                        >
                         </textarea>
-                    {/* </div> */}
+                    </div>
                 </div>
-                {/* Forgot to add the submit button */}
-
+                <div class="row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary float-start">Submit</button>
+                </div>
+            </div>
                 
 
             </form>
