@@ -5,7 +5,7 @@
 ### Getting Started
 
 1. In the `client` directory, run the following commands to download the necessary dependencies:
-  npm install
+npm install
 
 2. After downloading the dependencies, you can start the client application:
   npm start
@@ -19,9 +19,9 @@ The `server` directory contains the server-side code.
 ### Getting Started
 
 1. In the `server` directory, run the following commands to download the necessary dependencies:
-  npm install
+npm install
 
 2. After downloading the dependencies, you can start the server:
-  npm run dev
+npm run dev
 
 4. The server will run on PORT 30005.
