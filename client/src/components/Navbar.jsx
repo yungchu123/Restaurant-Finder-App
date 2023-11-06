@@ -22,6 +22,7 @@ const Navbar = ({ role, setIsAuthenticated, setUser }) => {
                     <div className="navbar-nav">
                         <NavLink to="/" className="nav-item nav-link">Home</NavLink>
                         <NavLink to="/restaurant/search" className="nav-item nav-link">Restaurant</NavLink>
+                        <a className="nav-item nav-link" href="/reservationpage">Reservations</a>
                     </div>
                     <div className="navbar-nav ms-auto">
                         { role !== "guest" ? ( 

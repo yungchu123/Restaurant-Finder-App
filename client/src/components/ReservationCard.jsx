@@ -1,6 +1,6 @@
-import people from './../people.png'
-import calender from './../calender.png'
-import clock from './../clock.png'
+import people from '../images/people.png'
+import calender from '../images/calender.png'
+import clock from '../images/clock.png'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useState } from "react"

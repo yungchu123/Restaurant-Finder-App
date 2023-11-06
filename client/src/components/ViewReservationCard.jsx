@@ -1,4 +1,4 @@
-import logo from './../foodImage.png'
+import logo from '../images/foodImage.png'
 import '../index.css';
 
 const ViewReservationCard = () => {

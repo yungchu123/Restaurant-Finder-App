@@ -7,7 +7,6 @@ const Footer = () => {
                     <h6 className="text-uppercase fs-5 mb-3">Discover</h6>
                         <a className="d-block link-underline link-underline-opacity-0 text-white-50 ps-0" href="/#">Rewards</a>
                         <a className="d-block link-underline link-underline-opacity-0 text-white-50 ps-0" href="/#">Deals</a>
-                        <a className="d-block link-underline link-underline-opacity-0 text-white-50 ps-0" href="/reservationpage">Reservations</a>
                         <a className="d-block link-underline link-underline-opacity-0 text-white-50 ps-0" href="/favouriterestaurant/page">Favourite Restaurant</a>
                         <a className="d-block link-underline link-underline-opacity-0 text-white-50 ps-0" href="/#">Restaurant near me</a>
                 </div>

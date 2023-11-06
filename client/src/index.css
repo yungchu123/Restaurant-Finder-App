@@ -25,3 +25,14 @@
     cursor: pointer; /* Change cursor to a pointer to indicate interactivity */
   }
   
+.text-overlay {
+    position: absolute;
+    top: 45%; /* Adjust the top value to center vertically */
+    left: 10%; /* Adjust the left value to center horizontally */
+    transform: translate(-50%, -50%);
+    /* background-color: rgba(0, 0, 0, 0.7); Add a semi-transparent background */
+    color: #fff; /* Text color */
+    padding: 5px 10px; /* Padding for the text */
+    font-size: 40px; 
+    font-weight: bold;
+}
