@@ -2,7 +2,9 @@
 2. Navigate to the `client` directory for the client-side code.
 3. Navigate to the `server` directory for the server-side code.
 
-### Getting Started
+## Getting Started
+
+### Client Directory
 
 1. In the `client` directory, run the following commands to download the necessary dependencies:
 npm install
@@ -12,11 +14,7 @@ npm install
 
 3. The client will run on `http://localhost:3000`. Open your web browser and navigate to this address to use the client application.
 
-## Server Directory
-
-The `server` directory contains the server-side code.
-  
-### Getting Started
+### Server Directory
 
 1. In the `server` directory, run the following commands to download the necessary dependencies:
 npm install
