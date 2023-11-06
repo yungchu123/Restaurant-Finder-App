@@ -33,7 +33,6 @@ const reviewSchema = new mongoose.Schema({
 });
 const Review = mongoose.model('Review', reviewSchema);
 
-
 const SINGAPORE_LOCATION_LIST = [
     '1.345653,103.736804',   // Jurong East
     '1.289307,103.824438',   // Tiong Bahru
@@ -91,28 +90,31 @@ async function fetchRestaurantsForAllLocations() {
 
 async function fetchReviews(placeId, savedRestaurantId) {
     try {
-        const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json?', {
             params: {
                 place_id: placeId,
                 key: process.env.GOOGLE_API_KEY
             }
         });
-        const reviews = response.data.result.reviews || [];
-        const name = response.data.result.name;
-        const reviewPromises = reviews.map(review => {
-            const reviewData = {
-                restaurantId: savedRestaurantId,
-                restaurantName: name,
-                authorId: null,
-                authorName: review.author_name,
-                rating: review.rating,
-                text: review.text,
-                language: review.language
-            };
-            return Review.create(reviewData);
-        });
-        await Promise.all(reviewPromises);
-        console.log(`Fetching reviews completed for restaurantId: ${savedRestaurantId}`);
+        if(response.data.result && Array.isArray(response.data.result.reviews)){
+            const reviews = response.data.result.reviews || [];
+            const name = response.data.result.name;
+            const reviewPromises = reviews.map(review => {
+                const reviewData = {
+                    restaurantId: savedRestaurantId,
+                    restaurantName: name,
+                    authorId: null,
+                    authorName: review.author_name,
+                    rating: review.rating,
+                    text: review.text,
+                    language: review.language
+                };
+                return Review.create(reviewData);
+            });
+            await Promise.all(reviewPromises);
+            console.log(`Fetching reviews completed for restaurantId: ${savedRestaurantId}`);
+        }
+        else {console.log(`No reviews found for restaurantId: ${savedRestaurantId}`)}
     } catch (error) {
         console.error(`Error fetching or saving reviews for restaurantId: ${savedRestaurantId}`, error);
     }
