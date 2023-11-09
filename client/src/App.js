@@ -5,8 +5,6 @@ import LoginForm from "./views/LoginPage";
 import ContactUs from "./components/ContactUs";
 import RegisterForm from "./views/RegisterPage";
 import ForgetPassword from "./components/ForgetPassword";
-import ReservationCard from "./components/ReservationCard";
-import ViewReservationCard from "./components/ViewReservationCard";
 import RestaurantPage from "./views/RestaurantPage";
 import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
@@ -47,44 +45,54 @@ function App() {
     }, []);
 
 
-    if (!isAuthenticated) return (
-      <div className="App"> 
-            <Navbar setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
-            <Routes>
-                <Route path="/" element={<GuestPage />} />
-                <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
-                <Route path="/register" element={<RegisterForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
-                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
-                <Route path="/aboutus" element={<AboutUs/>}/>
-                <Route path="/contactus" element={<ContactUs/>}/>
-                <Route path="/tandc" element={<TAndC/>}/>
-                <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
-                <Route path="/restaurant/page" element={<RestaurantPage />}/> 
-                <Route path="/reservationcard" element={<ReservationCard/>}/>
-                <Route path="/reservations" element={<ReservationPage/>}/>
-                <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
-            </Routes>
-            <Footer />
-      </div>
-    ) 
     return (
       <div className="App"> 
             <Navbar role={user.role} name={user.firstName + " " + user.lastName} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
-                {user.role.toLowerCase()==="customer" ? <Route path="/" element={<CustomerDashboard />} /> : <Route path="/" element={<RestaurantOwnerDashboard />} />}
-                <Route path="/profile" element={<ProfilePage user={user}/>} />
-                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
-                <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
+                {/* Pages for Guest Only */}
+                {!isAuthenticated && (
+                  <>
+                      <Route path="/" element={<GuestPage />} />  
+                      <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
+                      <Route path="/register" element={<RegisterForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
+                      <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
+                  </>
+                )}
+
+                {/* Pages for Customer Only*/}
+                { isAuthenticated && user.role.toLowerCase()==="customer" && (
+                  <>
+                      <Route path="/" element={<CustomerDashboard />} />
+                      <Route path="/favourite" element={<FavouriteRestaurantPage/>}/>
+                  </>
+                )}
+
+                {/* Pages for Restaurant Owner Only */}
+                { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
+                  <>
+                      <Route path="/" element={<RestaurantOwnerDashboard />} />
+                  </>
+                )}
+
+                {/* Pages for Both Customer and Restaurant Owner*/}
+                { isAuthenticated && (
+                  <>
+                      <Route path="/profile" element={<ProfilePage user={user}/>} />
+                      <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
+                      <Route path="/reservations" element={<ReservationPage/>}/>
+                  </>
+                )}
+
+                {/* Pages for public */}
                 <Route path="/restaurant/page" element={<RestaurantPage />}/> 
-                <Route path="/reservationcard" element={<ReservationCard/>}/>
-                <Route path="/reservations" element={<ReservationPage/>}/>
-                <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
-                <Route path="/favourite" element={<FavouriteRestaurantPage/>}/>
+                <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
+                <Route path="/aboutus" element={<AboutUs/>}/>
+                <Route path="/contactus" element={<ContactUs/>}/>
+                <Route path="/tandc" element={<TAndC/>}/>
             </Routes>
             <Footer />
       </div>
-    )
-
+    ) 
 }
 
 export default App;
