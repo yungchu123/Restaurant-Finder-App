@@ -6,6 +6,10 @@ router
   .route("/")
   .get(reviewsController.getAllReviews)
   .post(reviewsController.createNewReview)
+
+router
+  .route("/:id")
+  .get(reviewsController.getReview)
   .patch(reviewsController.updateReview)
   .delete(reviewsController.deleteReview);
 

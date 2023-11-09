@@ -5,8 +5,13 @@ const restaurantController = require("../controllers/restaurantsController");
 router
   .route("/")
   .get(restaurantController.getAllRestaurants)
-  //.post(usersController.createNewUser)
-  //.patch(usersController.updateUser)
-  //.delete(usersController.deleteUser);
+
+router
+  .route("/:id")
+  .get(restaurantController.getRestaurant)
+
+router
+  .route("/:id/reviews")
+  .get(restaurantController.getRestaurantReviews)
 
 module.exports = router;

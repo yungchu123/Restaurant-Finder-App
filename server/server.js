@@ -1,3 +1,4 @@
+
 const express = require("express");
 const mongoose = require("mongoose");
 var cors = require('cors');
@@ -6,13 +7,13 @@ require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-// Configure CORS to allow requests from frontend react app
-app.use(cors());
+//const dataPopulationProcess = require('./api.js');  
 
+// configure CORS to allow requests from frontend react app
+app.use(cors());
 app.use(express.json())
 
-// Connect to mongodb atlas
-
+// connect to mongodb atlas and populate database
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.DATABASE_URI, {
@@ -20,15 +21,17 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
     console.log("Connected to MongoDB Atlas");
+    //await dataPopulationProcess();
+
   } catch (error) {
-    console.error("Could not connect to MongoDB Atlas", error);
+    console.error("Failed to connect to MongoDB Atlas", error);
     process.exit(1); 
   }
 };
 
 connectDB();
 
-// Routes
+// routes
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/restaurants", require("./routes/restaurantRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
@@ -38,4 +41,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Run server using "npm run dev" in terminal
+// run server using "npm run dev" in terminal

@@ -1,0 +1,52 @@
+/* Add these styles to your Tables.css or a separate CSS file */
+.restaurant-tables {
+    display: block;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5cm;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 5%);
+    gap: 0.5cm;
+    margin-left: auto;
+  }
+  
+  .table {
+    width: 60%; /* Adjust the width as needed */
+    height: 1cm;
+    /* Add other styling properties for tables here */
+  }
+  
+  .available {
+    background-color: rgb(188, 235, 188);
+    /* Add styling for available tables */
+  }
+  
+  .reserved {
+    background-color: rgb(238, 181, 181);
+    /* Add styling for reserved tables */
+  }  
+  
+  .table-for-2 {
+    background-color: rgb(195, 179, 210); /* Red color or any color you prefer */
+  }
+
+  .table-for-4 {
+    background-color: rgb(206, 235, 239); 
+}
+
+  
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5cm;
+  }
+  
+  
+  .button {
+    display: block;
+    margin: 5px;
+  }
+  
