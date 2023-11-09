@@ -17,7 +17,7 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
         }
 
         // Authenticate Login
-        axios.post('http://localhost:5000/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
+        axios.post(`${process.env.REACT_APP_SERVER_URL}/api/users/login`, JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
             .then(response => {
                 console.log("Login Success")
                 console.log('Response data:', response.data);
@@ -28,7 +28,8 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
                 navigate('/')
             })
             .catch(error => {
-                console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                if (error.response) console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                else console.log(`Login Error: ${error}`)
                 setErrorMsg("Invalid Username or Password")
             });
         
@@ -64,7 +65,7 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
                 <div class="col-sm-10 offset-sm-2">
                     <button type="submit" class="btn btn-primary float-start">Login</button>
                     <a href="/register" class="btn btn-secondary btn-sm float-end">Register</a>
-                    <a href="/#" class="btn btn-secondary btn-sm float-end me-3">Forget Password</a>
+                    <a href="/forgetpassword" class="btn btn-secondary btn-sm float-end me-3">Forget Password</a>
                 </div>
             </div>
         </form>

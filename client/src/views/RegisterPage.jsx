@@ -19,10 +19,9 @@ const RegisterForm = ({setIsAuthenticated, setUser}) => {
             setErrorMsg("All fields are required")
             return
         }
-
         // Create new user in DB
         axios.post(
-            'http://localhost:5000/api/users/', 
+            `${process.env.REACT_APP_SERVER_URL}/api/users/`, 
             JSON.stringify({ firstName, lastName, username, password, role, email }), 
             { headers: {'Content-Type': 'application/json'} }
             )
