@@ -17,7 +17,7 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
         }
 
         // Authenticate Login
-        axios.post('http://localhost:5000/api/users/login', JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
+        axios.post(`${process.env.REACT_APP_SERVER_URL}/api/users/login`, JSON.stringify({ username, password }), { headers: {'Content-Type': 'application/json'} })
             .then(response => {
                 console.log("Login Success")
                 console.log('Response data:', response.data);

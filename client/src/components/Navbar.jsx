@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ role, setIsAuthenticated, setUser }) => {
+const Navbar = ({ role, name, setIsAuthenticated, setUser }) => {
     const navigate = useNavigate();
     
     const logout = () => {
@@ -27,14 +27,14 @@ const Navbar = ({ role, setIsAuthenticated, setUser }) => {
                     <div className="navbar-nav ms-auto">
                         { role !== "guest" ? ( 
                             <>
+                                <span className="navbar-text me-3">Welcome {name}</span>
                                 <NavLink to="/profile" exact={true} className="btn btn-dark me-3">Profile</NavLink>
                                 <a href="/" onClick={logout} className="btn btn-primary">Log out</a>
                             </>
                         ) : (
                             <>
                                 {/* <a href="/login" exact={true} className="btn btn-outline-primary" aria-current="page">Login</a> */}
-                                <NavLink to="/login" exact={true} className="btn btn-outline-primary" aria-current="page"> Login </NavLink>
-                                <div style={{ margin: '7px' }}></div>
+                                <NavLink to="/login" exact={true} className="btn btn-outline-primary me-3" aria-current="page"> Login </NavLink>
                                 <NavLink to="/register" className="btn btn-outline-primary">Register</NavLink>
                             </>
                         )}

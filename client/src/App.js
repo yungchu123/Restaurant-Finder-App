@@ -68,7 +68,7 @@ function App() {
     ) 
     return (
       <div className="App"> 
-            <Navbar role={user.role} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
+            <Navbar role={user.role} name={user.firstName + " " + user.lastName} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
                 <Route path="/profile" element={<ProfilePage user={user}/>} />
