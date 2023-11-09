@@ -33,7 +33,7 @@ const RestaurantSearchPage = () => {
             <div className="container mt-4 mb-5">
                 <SearchBar/>
             </div>
-            <div className="row">
+            <div className="row mx-0">
                 {/* Filter Side Bar */}
                 <div className="col-sm-2">
                     <Sidebar />

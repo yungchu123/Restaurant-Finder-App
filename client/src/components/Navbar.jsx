@@ -19,11 +19,33 @@ const Navbar = ({ role, name, setIsAuthenticated, setUser }) => {
                     <span className="navbar-toggler-icon" ></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarCollapse">
+                    {/* Left Side of Nav bar */}
                     <div className="navbar-nav">
                         <NavLink to="/" className="nav-item nav-link">Home</NavLink>
-                        <NavLink to="/restaurant/search" className="nav-item nav-link">Restaurant</NavLink>
-                        <a className="nav-item nav-link" href="/reservationpage">Reservations</a>
+                        { role.toLowerCase() === "guest" && (
+                            <>
+                                <NavLink to="/restaurant/search" className="nav-item nav-link">Restaurant Search</NavLink>
+                            </>
+                        )}
+
+                        { role.toLowerCase() === "customer" && (
+                            <>
+                                <NavLink to="/restaurant/search" className="nav-item nav-link">Restaurant Search</NavLink>
+                                <NavLink to="/reservations" className="nav-item nav-link">Reservations</NavLink>
+                                <NavLink to="/favourite" className="nav-item nav-link">Favourite List</NavLink>
+                            </>
+                        )}
+
+                        { role.toLowerCase() === "restaurateur" && (
+                            <>
+                                <NavLink to="/restaurant/update" className="nav-item nav-link">Manage Restaurant</NavLink>
+                                <NavLink to="/reservations" className="nav-item nav-link">Manage Reservations</NavLink>
+                            </>
+                        )}
+                        
                     </div>
+
+                    {/* Right Side of Nav bar */}
                     <div className="navbar-nav ms-auto">
                         { role !== "guest" ? ( 
                             <>

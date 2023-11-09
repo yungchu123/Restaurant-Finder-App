@@ -12,6 +12,8 @@ import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
 import TAndC from "./components/TAndC";
 import GuestPage from "./views/GuestPage";
+import CustomerDashboard from "./views/CustomerDashboard";
+import RestaurantOwnerDashboard from "./views/RestaurantOwnerDashboard";
 import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
 import RestaurantSearchPage from "./views/RestaurantSearchPage";
@@ -59,9 +61,8 @@ function App() {
                 <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
                 <Route path="/restaurant/page" element={<RestaurantPage />}/> 
                 <Route path="/reservationcard" element={<ReservationCard/>}/>
-                <Route path="/reservationpage" element={<ReservationPage/>}/>
+                <Route path="/reservations" element={<ReservationPage/>}/>
                 <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
-                <Route path="/favouriterestaurant/page" element={<FavouriteRestaurantPage/>}/>
             </Routes>
             <Footer />
       </div>
@@ -70,15 +71,15 @@ function App() {
       <div className="App"> 
             <Navbar role={user.role} name={user.firstName + " " + user.lastName} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
-                <Route path="/" element={<GuestPage />} />
+                {user.role.toLowerCase()==="customer" ? <Route path="/" element={<CustomerDashboard />} /> : <Route path="/" element={<RestaurantOwnerDashboard />} />}
                 <Route path="/profile" element={<ProfilePage user={user}/>} />
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/profile/update" element={<UpdateProfilePage user={user} setUser={setUser}/>} />
                 <Route path="/restaurant/page" element={<RestaurantPage />}/> 
                 <Route path="/reservationcard" element={<ReservationCard/>}/>
-                <Route path="/reservationpage" element={<ReservationPage/>}/>
+                <Route path="/reservations" element={<ReservationPage/>}/>
                 <Route path="/viewreservationcard" element={<ViewReservationCard/>}/>
-                <Route path="/favouriterestaurant/page" element={<FavouriteRestaurantPage/>}/>
+                <Route path="/favourite" element={<FavouriteRestaurantPage/>}/>
             </Routes>
             <Footer />
       </div>
