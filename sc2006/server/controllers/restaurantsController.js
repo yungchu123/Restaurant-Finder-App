@@ -73,14 +73,14 @@ const createNewRestaurant = async (req, res) => {
         } = req.body;
         console.log(req.body.inputRefValue)
            
-        const defaultTables = [
-            ...Array(3).fill({ tableType: "Table for 2" }),
-            ...Array(3).fill({ tableType: "Table for 4" }),
-            ...Array(3).fill({ tableType: "Table for 4" }),
-            ...Array(3).fill({ tableType: "Table for 4" }),
-            ...Array(3).fill({ tableType: "Table for 2" }),
-        ];
-  
+        const defaultTables = Array.from({ length: 15 }, (_, index) => ({
+          tableNumber: index + 1,
+          tableType: index < 3 || index >= 12 ? 2 : 4, // Set tableType based on index
+          isAvailable: true
+        }));
+        
+        const defaultReservations = [];
+
       // Validate the data (e.g., ensure required fields are present)
   
       // Capture the user's ID from the authenticated user (you need to implement user authentication first)
@@ -94,7 +94,8 @@ const createNewRestaurant = async (req, res) => {
         location,
         placeId,
         createdBy, // Add the user's ID or reference to the restaurant
-        tables: defaultTables,
+        tables: defaultTables, 
+        reservations: defaultReservations,
       });
   
       // Save the new restaurant to the database
@@ -107,68 +108,119 @@ const createNewRestaurant = async (req, res) => {
       console.error("Error registering the restaurant:", error);
       res.status(500).json({ error: "An error occurred while registering the restaurant. Please try again." });
     }
-  };
+};
   
-  const reserveTable = async (req, res) => {
-    const { restaurantId, tableNumber } = req.params;
-  
-    try {
-      const restaurant = await Restaurant.findById(restaurantId);
-  
-      if (!restaurant) {
-        return res.status(404).json({ message: "Restaurant not found" });
-      }
-  
-      const table = restaurant.tables.find((t) => t.tableNumber === parseInt(tableNumber));
-  
-      if (!table) {
-        return res.status(404).json({ message: "Table not found" });
-      }
-  
-      if (!table.isAvailable) {
-        return res.status(400).json({ message: "Table is already reserved" });
-      }
-  
-      // Perform the reservation logic here, e.g., update the availability status
-  
-      await restaurant.save();
-      res.json({ message: "Table reserved successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+const reserveTable = async (req, res) => {
+  const { restaurantId } = req.params;
+  const { tableNumber } = req.body;
+  // Create a new reservation with the default status set to 'pending'
+
+  const { v4: uuidv4 } = require('uuid');
+
+  const generateReservationId = () => {
+    return uuidv4();
   };
 
-const unreserveTable = async (req, res) => {
-    const { restaurantId, tableNumber } = req.params;
-  
-    try {
-      const restaurant = await Restaurant.findById(restaurantId);
-  
-      if (!restaurant) {
-        return res.status(404).json({ message: "Restaurant not found" });
-      }
-  
-      const table = restaurant.tables.find((t) => t.tableNumber === parseInt(tableNumber));
-  
-      if (!table) {
-        return res.status(404).json({ message: "Table not found" });
-      }
-  
-      if (table.isAvailable) {
-        return res.status(400).json({ message: "Table is already available" });
-      }
-  
-      // Perform the unreservation logic here, e.g., update the availability status
-      table.isAvailable = true;
-  
-      await restaurant.save();
-      res.json({ message: "Table unreserved successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+  const reservationId = generateReservationId()
+
+  try {
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
     }
-  };
+ 
+    const table = restaurant.tables.find((t) => t.tableNumber === parseInt(tableNumber));
+
+    if (!table) {
+      return res.status(404).json({ message: "Table not found" });
+    }
+
+    if (!table.isAvailable) {
+      return res.status(400).json({ message: "Table is already reserved" });
+    }
+    console.log("restaurant.reservations:", restaurant.reservations);
+    // Create a reservation object
+    const newReservation = {
+      _id: reservationId,
+      tableNumber: table.tableNumber,
+      status: 'pending',
+    };
+    const result = await Restaurant.updateOne(
+      { 'tables.tableNumber': table.tableNumber, _id: restaurantId },
+      {
+        $set: {'tables.$.isAvailable': false},
+        $push: { reservations: newReservation }
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.status(201).json({ message: 'Reservation created successfully', reservation: reservationId });
+    } else {
+      res.status(500).json({ error: 'Failed to update table availability' });
+    }
+  } catch (error) {
+    console.error('Error creating reservation:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const unreserveTable = async (req, res) => {
+  const { restaurantId } = req.params;
+  const { tableNumber } = req.body;
+
+  try {
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    const table = restaurant.tables.find((t) => t.tableNumber === parseInt(tableNumber));
+
+    if (!table) {
+      return res.status(404).json({ message: "Table not found" });
+    }
+
+    if (table.isAvailable) {
+      return res.status(400).json({ message: "Table is already available" });
+    }
+
+    // Find the reservation and update its status to 'available'
+    const reservation = restaurant.reservations.find((r) => r.tableNumber === tableNumber);
+
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    reservation.status = 'available';
+
+    // Update the table's availability status
+    table.isAvailable = true;
+
+    const result = await Restaurant.updateOne(
+      { _id: restaurantId, 'tables.tableNumber': tableNumber },
+      {
+        $set: {
+          'tables.$.isAvailable': true,
+        },
+        $pull: {
+          reservations: { tableNumber: tableNumber },
+        },
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.json({ message: "Reservation cancelled successfully" });
+    } else {
+      res.status(500).json({ error: 'Failed to update table availability' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
   
 const getTables = async (req, res) => {
     const { restaurantId } = req.params;
@@ -187,7 +239,42 @@ const getTables = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
     };
-  
+
+    const acceptReservation = async (req, res) => {
+      const { restaurantId } = req.params;
+      const { reservationId, isAccepted, tableNumber } = req.body;
+    
+      try {
+        const restaurant = await Restaurant.findById(restaurantId);
+        if (!restaurant) {
+          return res.status(404).json({ message: "Restaurant not found" });
+        }
+    
+        if (reservationId !== -1) {
+          console.log(tableNumber)
+          console.log(isAccepted)
+          const result = await Restaurant.updateOne(
+            {_id: restaurantId, 'reservations.tableNumber': tableNumber, 'tables.tableNumber': tableNumber},
+            {$set: {
+                'reservations.$': {
+                  tableNumber: tableNumber,
+                  status: isAccepted ? 'accepted' : 'declined',
+                  // Add other reservation fields as needed
+                },
+                'tables.$.isAvailable': !isAccepted
+              }},
+          );
+          
+          res.status(200).json({ message: 'Reservation status updated successfully' });
+        } else {
+          res.status(400).json({ error: 'Invalid reservationId' });
+        }
+      } catch (error) {
+        console.error('Error accepting/declining reservation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    };    
+
   module.exports = {
     getAllRestaurants,
     getRestaurant,
@@ -196,6 +283,7 @@ const getTables = async (req, res) => {
     getRegisteredRestaurants, // Add this line to export the new function
     reserveTable,
     unreserveTable,
-    getTables
+    getTables,
+    acceptReservation
   };
   
