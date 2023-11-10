@@ -1,16 +1,19 @@
 const mongoose = require("mongoose");
 
-const tableSchema = new mongoose.Schema({
-    tableType: {
+const reservationSchema = new mongoose.Schema({
+    _id: {
       type: String,
-      enum: ["Table for 2", "Table for 4"],
+      default: mongoose.Types.ObjectId,
+    },
+    tableNumber: {
+      type: Number,
       required: true,
     },
-    isAvailable: {
-      type: Boolean,
-      default: true, // Tables are initially available
+    status: {
+      type: String,
+      enum: ['available', 'pending', 'accepted', 'declined'],
+      default: 'available',
     },
-    // Add other properties specific to each table as needed
   });
 
 const restaurantSchema = new mongoose.Schema({
@@ -46,28 +49,40 @@ const restaurantSchema = new mongoose.Schema({
             type: [Number],
             required: true
         }
-    }
+    },
     _id: {
         type: {
             type: Number,
             required: true
         }
-    }
+    },
     createdBy: {
         type: String,
         required: true,
         trim: true,
     },
-    tables: {[
-        ...Array(3).fill({ tableType: "Table for 2" }),
-        ...Array(3).fill({ tableType: "Table for 4" }),
-        ...Array(3).fill({ tableType: "Table for 4" }),
-        ...Array(3).fill({ tableType: "Table for 4" }),
-        ...Array(3).fill({ tableType: "Table for 2" }),
+    reservations: {
+        type: [reservationSchema], // Indicate that it is an array of reservationSchema
+        default: [], // Initialize it as an empty array
+      },
+    tables: [
+        { tableNumber: 1, tableType: 2, isAvailable: true },
+        { tableNumber: 2, tableType: 2, isAvailable: true },
+        { tableNumber: 3, tableType: 2, isAvailable: true },
+        { tableNumber: 4, tableType: 4, isAvailable: true },
+        { tableNumber: 5, tableType: 4, isAvailable: true },
+        { tableNumber: 6, tableType: 4, isAvailable: true },
+        { tableNumber: 7, tableType: 4, isAvailable: true },
+        { tableNumber: 8, tableType: 4, isAvailable: true },
+        { tableNumber: 9, tableType: 4, isAvailable: true },
+        { tableNumber: 10, tableType: 4, isAvailable: true },
+        { tableNumber: 11, tableType: 4, isAvailable: true },
+        { tableNumber: 12, tableType: 4, isAvailable: true },
+        { tableNumber: 13, tableType: 2, isAvailable: true },
+        { tableNumber: 14, tableType: 2, isAvailable: true },
+        { tableNumber: 15, tableType: 2, isAvailable: true },
       ],
-      required: true
-    }
-});
+    });
 
 // Allows for geospatial queries e.g. find restaurants within 5km of a location
 restaurantSchema.index({ location: '2dsphere' });
