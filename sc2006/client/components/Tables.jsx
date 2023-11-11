@@ -138,7 +138,7 @@ const reserveTable = async (tableNumber) => {
   
     const reserved = restaurant.tables.filter((table) => {
       const reservationsForTable = restaurant.reservations.filter((reservation) => {
-        return reservations.status === 'pending' && reservation.tableNumber === table.tableNumber;
+        return reservation.status === 'pending' && reservation.tableNumber === table.tableNumber;
       });
     
       return reservationsForTable.length > 0;
