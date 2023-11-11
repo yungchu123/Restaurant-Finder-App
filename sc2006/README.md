@@ -1,5 +1,3 @@
-** The tables for restaurants up but not done yet
-
 1. Start by cloning this repository to your local machine.
 2. Navigate to the `client` directory for the client-side code.
 3. Navigate to the `server` directory for the server-side code.
