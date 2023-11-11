@@ -115,14 +115,6 @@ const reserveTable = async (req, res) => {
   const { tableNumber } = req.body;
   // Create a new reservation with the default status set to 'pending'
 
-  const { v4: uuidv4 } = require('uuid');
-
-  const generateReservationId = () => {
-    return uuidv4();
-  };
-
-  const reservationId = generateReservationId()
-
   try {
     const restaurant = await Restaurant.findById(restaurantId);
 
@@ -142,7 +134,6 @@ const reserveTable = async (req, res) => {
     console.log("restaurant.reservations:", restaurant.reservations);
     // Create a reservation object
     const newReservation = {
-      _id: reservationId,
       tableNumber: table.tableNumber,
       status: 'pending',
     };
@@ -155,7 +146,7 @@ const reserveTable = async (req, res) => {
     );
 
     if (result.modifiedCount === 1) {
-      res.status(201).json({ message: 'Reservation created successfully', reservation: reservationId });
+      res.status(201).json({ message: 'Reservation created successfully'});
     } else {
       res.status(500).json({ error: 'Failed to update table availability' });
     }
@@ -242,33 +233,40 @@ const getTables = async (req, res) => {
 
     const acceptReservation = async (req, res) => {
       const { restaurantId } = req.params;
-      const { reservationId, isAccepted, tableNumber } = req.body;
+      const { isAccepted, tableNumber } = req.body;
     
       try {
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
           return res.status(404).json({ message: "Restaurant not found" });
         }
-    
-        if (reservationId !== -1) {
-          console.log(tableNumber)
-          console.log(isAccepted)
-          const result = await Restaurant.updateOne(
-            {_id: restaurantId, 'reservations.tableNumber': tableNumber, 'tables.tableNumber': tableNumber},
-            {$set: {
-                'reservations.$': {
-                  tableNumber: tableNumber,
-                  status: isAccepted ? 'accepted' : 'declined',
-                  // Add other reservation fields as needed
-                },
-                'tables.$.isAvailable': !isAccepted
-              }},
-          );
-          
-          res.status(200).json({ message: 'Reservation status updated successfully' });
-        } else {
-          res.status(400).json({ error: 'Invalid reservationId' });
-        }
+
+        console.log(tableNumber)
+        console.log(isAccepted)
+        const result = await Restaurant.updateOne(
+          {
+            _id: restaurantId,
+            'reservations.tableNumber': tableNumber,
+          },
+          {
+            $set: {
+              "reservations.$.status": isAccepted ? "accepted":"declined",
+            }
+          }
+        );        
+        const result2 = await Restaurant.updateOne(
+          {
+            _id: restaurantId,
+            'tables.tableNumber': tableNumber,
+          },
+          {
+            $set: {
+              "tables.$.isAvailable": !isAccepted
+            }
+          }
+        );       
+        
+        res.status(200).json({ message: 'Reservation status updated successfully' });
       } catch (error) {
         console.error('Error accepting/declining reservation:', error);
         res.status(500).json({ error: 'Internal server error' });
