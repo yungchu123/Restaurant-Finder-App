@@ -155,6 +155,58 @@ const updateUser = asyncHandler(async (req, res) => {
     res.json(updatedUser)
 })
 
+// @desc Update a user review
+// @route PATCH /users/:id/reviews/:reviewId
+// @access Private
+const updateReview = asyncHandler(async (req,res) => {
+    const{restaurantId,authorId,rating,text} = req.body
+
+    // Missing fields
+    console.log("Updating user")
+    if(!restaurantId || !authorId || !rating || !text){
+        res.status(400).json({ error: 'All fields are required' })
+        throw new CustomError(400, 'All fields are required')
+    }
+
+    // Prepare updated fields
+    const updatedFields = {
+        rating,
+        text
+    }
+
+    console.log(req.params)
+    // Update review and return updated document
+    const updatedReview = await Review.findOneAndUpdate(
+        {_id: req.params.reviewId},
+        {$set: updatedFields},
+        {new: true, runValidators: true}
+    )
+
+    if (!updatedReview){
+        res.status(400).json({ error: 'Review not found' })
+        throw new CustomError(400, 'Review not found')
+    }
+
+    console.log(updatedReview)
+    res.json(updatedReview)
+})
+
+// @desc Delete a user review
+// @route PATCH /users/:id/reviews/:reviewId
+// @access Private
+const deleteReview = asyncHandler(async (req, res) => {
+    const review = await Review.findOneAndDelete({_id: req.params.reviewId})
+
+    if (!review) {
+        res.status(400).json({ error: 'Review not found'})
+        throw new CustomError(400, 'Review not found')
+    } 
+
+    const message = `Review on ${review.restaurantName} by ${review.authorName} has been deleted`
+    console.log(message)
+    res.json(message)
+})
+
 // @desc Delete a user
 // @route DELETE /users/:id
 // @access Private
@@ -178,5 +230,7 @@ module.exports = {
     loginUser,
     createNewUser,
     updateUser,
+    updateReview,
+    deleteReview,
     deleteUser
 }

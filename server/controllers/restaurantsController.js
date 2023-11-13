@@ -21,7 +21,7 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 // @route GET /restaurants/:id
 // @access Public
 const getRestaurant = asyncHandler(async (req, res) => {
-    const restaurant = await Restaurant.findOne({ _id: { $eq: req.params.id} }).lean()
+    const restaurant = await Restaurant.findOne({ restaurantId: { $eq: req.params.id} }).lean()
     if (!restaurant) {
         res.status(400).json({ error: 'No Restaurant found'})
         throw new CustomError(400, 'No Restaurant found')
