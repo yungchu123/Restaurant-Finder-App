@@ -6,8 +6,10 @@ import ContactUs from "./components/ContactUs";
 import RegisterForm from "./views/RegisterPage";
 import ForgetPassword from "./components/ForgetPassword";
 import RestaurantPage from "./views/RestaurantPage";
+import ManageRestaurantPage from "./views/ManageRestaurantPage";
 import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
+import ManageReservationCard from "./components/ManageReservationCard";
 import TAndC from "./components/TAndC";
 import GuestPage from "./views/GuestPage";
 import CustomerDashboard from "./views/CustomerDashboard";
@@ -29,7 +31,7 @@ function App() {
   
       if (loginToken) {
           (async () => {
-            axios.get(`http://localhost:5000/api/users/${loginToken}`)
+            axios.get(`http://localhost:5001/api/users/${loginToken}`)
             .then(response => {
                 console.log('User data:', response.data);
                 setIsAuthenticated(true)
@@ -71,6 +73,8 @@ function App() {
                 { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
                   <>
                       <Route path="/" element={<RestaurantOwnerDashboard />} />
+                      <Route path="/restaurant/manage" element={<ManageRestaurantPage/>}/>
+                      <Route path="/managereservationcard" element={<ManageReservationCard/>}/>
                   </>
                 )}
 
