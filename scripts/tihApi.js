@@ -2,6 +2,37 @@ const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const reservationSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: mongoose.Types.ObjectId,
+  },
+  tableNumber: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['available', 'pending', 'accepted', 'declined'],
+    default: 'available',
+  },
+});
+
+const tableSchema = new mongoose.Schema({
+  tableNumber: {
+      type: Number,
+      required: true
+  },
+  tableType: {
+      type: Number,
+      required: true
+  },
+  isAvailable: {
+      type: Boolean,
+      required: true
+  }
+});
+
 const restaurantSchema = new mongoose.Schema({
     restaurantId: String,
     restaurantName: String,
@@ -12,11 +43,30 @@ const restaurantSchema = new mongoose.Schema({
         coordinates: { type: [Number], required: true }
     },
     cuisine: String,
-    placeDetails: Object,
-    photoReference: String
+    photoReference: String,
+    createdBy: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    reservations: {
+      type: [reservationSchema], 
+      default: []
+    },
+    tables: {
+      type: [tableSchema],
+      default: function() {
+          return Array.from({ length: 15 }, (_, index) => ({
+              tableNumber: index + 1,
+              tableType: index < 3 || index >= 12 ? 2 : 4,
+              isAvailable: true
+          }));
+      }
+  }
+
 });
 restaurantSchema.index({ location: '2dsphere' });
-const Restaurant = mongoose.model('RestaurantTest', restaurantSchema);
+const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 
 const reviewSchema = new mongoose.Schema({
     restaurantId: String,
@@ -27,7 +77,7 @@ const reviewSchema = new mongoose.Schema({
     text: String,
     language: String
 });
-const Review = mongoose.model('ReviewTest', reviewSchema);
+const Review = mongoose.model('Review', reviewSchema);
 
 const cuisines = ['Chinese', 'Thai', 'Indian', 'Mexican', 'Western', 'Japanese', 'Korean', 'Italian', 'Vietnamese', 'Muslim', 'French', 'Spanish', 'American'];
 
@@ -112,25 +162,24 @@ async function insertData(data, cuisine) {
         type: 'Point',
         coordinates: [restaurant.location.longitude, restaurant.location.latitude]
       },
-      cuisine: cuisine
+      cuisine: cuisine,
+      createdBy: null,
+      reservations: [],
+      tables: []
     }));
 
     for (const restaurant of restaurantsToInsert) {
       const placeId = await getPlaceId(restaurant.restaurantName);
       if (placeId) {
         const placeDetails = await getPlaceDetails(placeId);
-        restaurant.placeDetails = placeDetails;
-       
         if (Array.isArray(placeDetails.photos) && placeDetails.photos.length > 0) {
           const ref = placeDetails.photos[0].photo_reference;
           if (ref) {
             restaurant.photoReference = ref;
           } else {
-            console.log(`No photo reference found for restaurant ${restaurant.restaurantName}.`);
             continue; 
           }
         } else {
-          console.log(`No photos array found for restaurant ${restaurant.restaurantName}.`);
           continue; 
         }
       } else {
