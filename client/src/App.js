@@ -9,9 +9,7 @@ import RestaurantPage from "./views/RestaurantPage";
 import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
 import TAndC from "./components/TAndC";
-import GuestPage from "./views/GuestPage";
-import CustomerDashboard from "./views/CustomerDashboard";
-import RestaurantOwnerDashboard from "./views/RestaurantOwnerDashboard";
+import HomePage from "./views/HomePage";
 import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
 import RestaurantSearchPage from "./views/RestaurantSearchPage";
@@ -49,10 +47,10 @@ function App() {
       <div className="App"> 
             <Navbar role={user.role} name={user.firstName + " " + user.lastName} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
+                <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} userRole={user.role}/>} /> 
                 {/* Pages for Guest Only */}
                 {!isAuthenticated && (
                   <>
-                      <Route path="/" element={<GuestPage />} />  
                       <Route path="/login" element={<LoginForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
                       <Route path="/register" element={<RegisterForm setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>} />
                       <Route path="/forgetpassword" element={<ForgetPassword/>}/> 
@@ -62,7 +60,6 @@ function App() {
                 {/* Pages for Customer Only*/}
                 { isAuthenticated && user.role.toLowerCase()==="customer" && (
                   <>
-                      <Route path="/" element={<CustomerDashboard />} />
                       <Route path="/favourite" element={<FavouriteRestaurantPage/>}/>
                   </>
                 )}
@@ -70,7 +67,7 @@ function App() {
                 {/* Pages for Restaurant Owner Only */}
                 { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
                   <>
-                      <Route path="/" element={<RestaurantOwnerDashboard />} />
+                      <Route path="/restaurant/update" element={<h2>Update Restaurant Page</h2>}/>
                   </>
                 )}
 
@@ -89,6 +86,7 @@ function App() {
                 <Route path="/aboutus" element={<AboutUs/>}/>
                 <Route path="/contactus" element={<ContactUs/>}/>
                 <Route path="/tandc" element={<TAndC/>}/>
+                <Route path="*" element={<h2>404 Page not found</h2>}/>
             </Routes>
             <Footer />
       </div>
