@@ -35,10 +35,6 @@ router
   .get(restaurantController.getTables);
 
 router
-  .route("/:restaurantId/tables")
-  .get(restaurantController.getTables);
-
-router
   .route("/:restaurantId/reservations/accept")
   .post(restaurantController.acceptReservation);
 

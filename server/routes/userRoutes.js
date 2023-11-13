@@ -11,9 +11,14 @@ router
   .route('/:id')
   .get(usersController.getUser)
   .patch(usersController.updateUser)
-  .delete(usersController.deleteUser);
+  .delete(usersController.deleteUser)
 
 router.get('/:id/reviews', usersController.getUserReviews)
+
+router
+  .route('/:id/reviews/:reviewId')
+  .patch(usersController.updateReview)
+  .delete(usersController.deleteReview)
 
 router.post('/login', usersController.loginUser)
 
