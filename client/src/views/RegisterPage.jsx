@@ -34,12 +34,12 @@ const RegisterForm = ({setIsAuthenticated, setUser}) => {
                 navigate('/')
             })
             .catch(error => {
-                if (error.response.data.error) {
+                if (error.response) {
                     console.error(`Register Error: ${error.response.data.error} | Status: ${error.response.status}`);
                     setErrorMsg(error.response.data.error)
                 } else {
                     console.error(`Register Error: ${error}`)
-                    setErrorMsg("User creation unsuccessful")
+                    setErrorMsg(`User creation unsuccessful. Error: ${error}`)
                 }
             });
 
