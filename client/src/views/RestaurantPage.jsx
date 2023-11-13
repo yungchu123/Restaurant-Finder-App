@@ -1,9 +1,23 @@
 import logo from '../images/foodImage.png';
-import React from 'react';
+import React, { useState } from 'react';
 import ReservationCard from '../components/ReservationCard';
 import '../index.css';
+import ReviewCard from '../components/ReviewCard';
+import AddReviewCard from '../components/AddReviewCard';
 
-const RestaurantPage = ({restaurant}) => {
+const RestaurantPage = ({restaurant, isAuthenticated}) => {
+  const [displayAddReview, setDisplayAddReview] = useState(false)
+  const [errMsg, setErrMsg] = useState('')
+
+  // Only Login User can add review
+  const handleAddReviewDisplay = () => {
+      if (isAuthenticated) {
+          setErrMsg('')
+          setDisplayAddReview(!displayAddReview)
+      } else {
+          setErrMsg('Pleeaase Login First')
+      }
+  }
 
   // CSS STYLES
   const imageBgStyle = {
@@ -36,6 +50,18 @@ const RestaurantPage = ({restaurant}) => {
   const reviews = 150
   const status = true // Open or not
   const position = { lat: '1.3394', lon: '103.7054'}
+  const reviewList = [
+      {
+        authorName: "Stephanie Chan",
+        rating: 5,
+        text: "Straits Chinese Signatures Restaurant serves pretty decent Nonya dishes. There are other Nonya restaurants options with elaborated deco & nice ambience, well plated dishes but you’d have to pay more. So this is a worth to try for a middle range $$ restaurant compared to the rest."
+      },
+      {
+        authorName: "SiewShuen Ng",
+        rating: 4,
+        text: "It was very easy liaise with them when I had to order for a corporate meeting. Communication was efficient and polite from the point of order to the delivery. We ordered their bowls and bento that were big in portion and tasted great. And the food was still pretty hot when delivered. Would definitely recommend them and will try their other dishes in their restaurant."
+      }
+  ]
 
   const generateStar = (rating) => {
       return <span>
@@ -73,20 +99,17 @@ const RestaurantPage = ({restaurant}) => {
       <div className="row mt-4 mb-5 justify-content-between" style={pageContainer}>
         <div className="col-lg-7 p-0">
               {/* Write review and add to favourite buttons */}
-              <div>
-                <button type="button" className="btn btn-danger me-3"><i className="bi bi-star me-2"/>Write a review</button>
-                <button type="button" className="btn btn-primary me-3"><i className="bi bi-bookmarks me-2"></i>Add to Favourites</button>
+              <div className="mb-3">
+                <button className="btn btn-danger me-3" onClick={handleAddReviewDisplay}><i className="bi bi-star me-2"/>Write a review</button>
+                <button className="btn btn-primary me-3"><i className="bi bi-bookmarks me-2"></i>Add to Favourites</button>
+                <span className="text-danger">{errMsg}</span>
               </div>
-              <hr className="mt-4"/>
+              
+              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} />}
 
+              <hr className="mt-4"/>
               {/* Description Section */}
               <h3>Description</h3>
-              <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quod veniam optio libero rem amet! Possimus et rem quaerat repellendus harum provident impedit officiis eligendi placeat odio, fugiat voluptates, ipsam corporis?</p>
-
-              <hr className="mt-4"/>
-
-              {/* Reviews Section */}
-              <h3>Reviews</h3>
               <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quod veniam optio libero rem amet! Possimus et rem quaerat repellendus harum provident impedit officiis eligendi placeat odio, fugiat voluptates, ipsam corporis?</p>
 
               <hr className="mt-4"/>
@@ -108,6 +131,16 @@ const RestaurantPage = ({restaurant}) => {
                       </p>
                   </div>
               </div>
+
+              <hr className="mt-4"/>
+
+              {/* Reviews Section */}
+              <h3 className="mb-3">Reviews</h3>
+              {reviewList.map(review => (
+                  <div className="mb-4">
+                      <ReviewCard authorName={review.authorName} rating={review.rating} description={review.text}/>
+                  </div>
+              ))}
         </div>
         <div className="col-lg-4">
           <ReservationCard/>

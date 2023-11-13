@@ -81,7 +81,7 @@ function App() {
                 )}
 
                 {/* Pages for public */}
-                <Route path="/restaurant/page" element={<RestaurantPage />}/> 
+                <Route path="/restaurant/page" element={<RestaurantPage isAuthenticated={isAuthenticated}/>}/> 
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/aboutus" element={<AboutUs/>}/>
                 <Route path="/contactus" element={<ContactUs/>}/>
