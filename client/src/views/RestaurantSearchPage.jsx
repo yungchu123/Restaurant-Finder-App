@@ -2,45 +2,26 @@ import RestaurantCard from "../components/RestaurantCard"
 import SearchBar from "../components/SearchBar"
 import Sidebar from "../components/Sidebar"
 import Sortbar from "../components/Sortbar"
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 const RestaurantSearchPage = () => {
-    const restaurants = [
-        {
-            name: 'Dian Xiao Er',
-            categories: ['Chinese', 'Chicken'],
-            rating: 4.3,
-            reviews: 100,
-            location: { lat: 1.35, lng: 103.8198 }
-        },
-        {
-            name: 'Dian Xiao Er',
-            categories: ['Chinese', 'Chicken'],
-            rating: 4.3,
-            reviews: 100,
-            location: { lat: 1.3463, lng: 103.6891 }
-        },
-        {
-            name: 'Dian Xiao Er',
-            categories: ['Chinese', 'Chicken'],
-            rating: 4.3,
-            reviews: 100,
-            location: { lat: 1.3463, lng: 103.6891 }
-        },
-        {
-            name: 'Dian Xiao Er',
-            categories: ['Chinese', 'Chicken'],
-            rating: 4.3,
-            reviews: 100,
-            location: { lat: 1.3463, lng: 103.6891 }
-        },
-        {
-            name: 'Dian Xiao Er',
-            categories: ['Chinese', 'Chicken'],
-            rating: 4.3,
-            reviews: 100,
-            location: { lat: 1.3521, lng: 103.4198 }
-        }
-    ]
+    const [restaurants, setRestaurants] = useState([])
+
+    useEffect(() => {
+        // Pull a list of restaurants from backend
+        (async () => {
+            const limit = 20;
+            axios.get(`${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`)
+            .then(response => {
+                console.log('Restaurants:', response.data);
+                setRestaurants(response.data)
+            })
+            .catch(error => {
+                console.log(`Error: ${error}`)
+            });
+        })();
+      }, []);
 
     return (
         <>
@@ -62,7 +43,12 @@ const RestaurantSearchPage = () => {
                     <div className="row row-cols-4 row-gap-5 mb-5">
                         {restaurants.map(restaurant => (
                             <div className="col">
-                                <RestaurantCard restaurant={restaurant}/>
+                                <RestaurantCard 
+                                    name={restaurant.restaurantName} 
+                                    cuisine={restaurant.cuisine} 
+                                    rating={restaurant.rating}
+                                    imgUrl={restaurant.imageData}
+                                />
                             </div>
                         ))}
                     </div>

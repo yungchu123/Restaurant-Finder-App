@@ -1,29 +1,28 @@
 import React from 'react'
-import logo from '../images/foodImage.png'
 import '../index.css';
 // import Star from './Star'
 
-const RestaurantCard = ({restaurant}) => {
+const RestaurantCard = ({name, cuisine, rating, reviews, imgUrl}) => {
 
     return (
         <>
             <a class="icon-link icon-link-hover" href="/restaurant/page" style={{ color: 'rgb(33, 37, 41)', textDecoration: 'none' }}>
                 <div class="card card-hover" style={{ width: '18rem', position: 'relative' }}>
-                    <img src={logo} class="card-img-top" alt="..."/>
+                    {/* Image */}
+                    <img style={{height: '150px', objectFit: 'cover'}}
+                    src={imgUrl} class="card-img-top" alt="..."/>
+
+                    {/* Restaurant Details */}
                     <div class="card-body">
-                        <h5 class="card-title mb-3">{restaurant.name}</h5>
+                        <h5 class="card-title mb-3">{name}</h5>
                         <p class="card-text mb-2">
-                            {restaurant.categories.join(" | ")} 
+                            {cuisine} 
                         </p>
                         <p className="card-text">
-                        <span className="me-3"><i class="bi bi-star-fill me-1"></i> {restaurant.rating}</span>
-                        <span className="text-secondary"> ({restaurant.reviews} reviews)</span>
+                        <span className="me-3"><i class="bi bi-star-fill me-1"></i> {rating}</span>
+                        <span className="text-secondary"> ({reviews} reviews)</span>
                         </p>
                     </div>
-            {/* <div style={{ position: 'absolute', bottom: '5px', right: '5px', background: 'rgba(255, 255, 255, 0.8)', padding: '5px', borderRadius: '50%'}}>
-            <Star bgColor="white" />
-
-            </div> */}
                 </div>
             </a>
         </>
