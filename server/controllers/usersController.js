@@ -4,6 +4,7 @@ const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 const CustomError = require('../utils/customError')
 const axios = require('axios');
+const Restaurant = require('../models/restaurantModel')
 
 // @desc Get all users in database
 // @route GET /users
@@ -276,10 +277,19 @@ const deleteUser = asyncHandler(async (req, res) => {
 const addFavorite = asyncHandler(async (req, res) => {
     const userId = req.params.id;
     const restaurantId = req.body.restaurantId;
+    
     if (!restaurantId) {
         res.status(400).json({ error: 'Restaurant ID is required' });
         throw new CustomError(400, 'Restaurant ID is required');
     }
+
+    const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
+    if (!restaurant) {
+        res.status(400).json({ error: 'Restaurant ID is invalid' });
+        throw new CustomError(400, 'Restaurant ID is invalid');
+    }
+    console.log(restaurant)
+
     const user = await User.findByIdAndUpdate(userId, {
         $addToSet: { favorites: restaurantId }
     }, { new: true });
@@ -297,6 +307,7 @@ const addFavorite = asyncHandler(async (req, res) => {
 const removeFavorite = asyncHandler(async (req, res) => {
     const userId = req.params.id;
     const restaurantId = req.body.restaurantId;
+    console.log(req.body)
     if (!restaurantId) {
         res.status(400).json({ error: 'Restaurant ID is required' });
         throw new CustomError(400, 'Restaurant ID is required');

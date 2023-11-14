@@ -92,11 +92,11 @@ const Sidebar = ({setDistanceFilter, setFilter}) => {
                 <input
                     className='form-check-input'
                     type="radio"
-                    value="8000"
-                    checked={distanceOption === '8000'}
+                    value="10000"
+                    checked={distanceOption === '10000'}
                     onChange={e => setDistanceOption(e.target.value)}
                 />
-                Drive (8 km)
+                Drive (10 km)
                 </label>
             </div>
             <button className="btn btn-primary mt-4" onClick={handleFilter}>Apply</button>
