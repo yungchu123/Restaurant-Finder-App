@@ -1,5 +1,6 @@
 const User = require('../models/userModel')
 const Review = require('../models/reviewModel')
+const Reservation = require('../models/reservationModel')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 const CustomError = require('../utils/customError')
@@ -11,8 +12,8 @@ const axios = require('axios');
 const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find().select('-password').lean()
     if (!users?.length) {
-        res.status(400).json({ error: 'No Users found'})
-        throw new CustomError(400, 'No Users found')
+        res.status(404).json({ error: 'No Users found'})
+        throw new CustomError(404, 'No Users found')
     }
     res.json(users)
 })
@@ -23,8 +24,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ _id: { $eq: req.params.id} }).select('-password').lean()
     if (!user) {
-        res.status(400).json({ error: 'No User found'})
-        throw new CustomError(400, 'No User found')
+        res.status(404).json({ error: 'No User found'})
+        throw new CustomError(404, 'No User found')
     }
     console.log(user)
     res.json(user)
@@ -37,10 +38,23 @@ const getUserReviews = asyncHandler(async (req, res) => {
     const reviews = await Review.find({ authorId: {$eq: req.params.id} }).lean()
 
     if (!reviews?.length) {
-        res.status(400).json({ error: 'No reviews found'})
-        throw new CustomError(400, 'No reviews found')
+        res.status(404).json({ error: 'No reviews found'})
+        throw new CustomError(404, 'No reviews found')
     }
     res.json(reviews)
+})
+
+// @desc Get all reservations from the user
+// @route GET /users/:id/reservations
+// @access Private
+const getUserReservations = asyncHandler(async (req, res) => {
+    const reservations = await Reservation.find({ customerId: {$eq: req.params.id} }).lean()
+
+    if (!reservations?.length) {
+        res.status(404).json({ error: 'No reservations found'})
+        throw new CustomError(404, 'No reservations found')
+    }
+    res.json(reservations)
 })
 
 // @desc Login user
@@ -57,8 +71,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({username: { $eq: username } })
     if (!user) {
-        res.status(400).json({ error: 'No Users found' })
-        throw new CustomError(400, 'No Users found')
+        res.status(404).json({ error: 'No Users found' })
+        throw new CustomError(404, 'No Users found')
     }
     
     const passwordMatch = await bcrypt.compare(password, user.password)
@@ -148,7 +162,7 @@ const updateUser = asyncHandler(async (req, res) => {
     )
 
     if (!updatedUser){
-        res.status(400).json({ error: 'User not found' })
+        res.status(404).json({ error: 'User not found' })
         throw new CustomError(400, 'User not found')
     }
 
@@ -183,8 +197,8 @@ const updateReview = asyncHandler(async (req,res) => {
     )
 
     if (!updatedReview){
-        res.status(400).json({ error: 'Review not found' })
-        throw new CustomError(400, 'Review not found')
+        res.status(404).json({ error: 'Review not found' })
+        throw new CustomError(404, 'Review not found')
     }
 
     // Re-calculate restaurant ratings
@@ -210,8 +224,8 @@ const updateReview = asyncHandler(async (req,res) => {
 
     } catch (error) {
         // restaurantId does not exist
-        res.status(400).json({ error: 'No restaurant found' });
-        throw new CustomError(400, 'No restaurant found')
+        res.status(404).json({ error: 'No restaurant found' });
+        throw new CustomError(404, 'No restaurant found')
     }
 
     console.log(updatedReview)
@@ -219,14 +233,14 @@ const updateReview = asyncHandler(async (req,res) => {
 })
 
 // @desc Delete a user review
-// @route PATCH /users/:id/reviews/:reviewId
+// @route DELETE /users/:id/reviews/:reviewId
 // @access Private
 const deleteReview = asyncHandler(async (req, res) => {
     const review = await Review.findOneAndDelete({_id: req.params.reviewId})
 
     if (!review) {
-        res.status(400).json({ error: 'Review not found'})
-        throw new CustomError(400, 'Review not found')
+        res.status(404).json({ error: 'Review not found'})
+        throw new CustomError(404, 'Review not found')
     } 
 
     // Re-calculate restaurant ratings
@@ -244,7 +258,7 @@ const deleteReview = asyncHandler(async (req, res) => {
         restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
         
         try{
-            const userResponse = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
+            const restaurantResponse2 = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
                 rating: restaurantRating,
                 numReviews: restaurantNumReviews
             });
@@ -254,14 +268,67 @@ const deleteReview = asyncHandler(async (req, res) => {
 
     } catch (error) {
         // restaurantId does not exist
-        res.status(400).json({ error: 'No restaurant found' });
-        throw new CustomError(400, 'No restaurant found')
+        res.status(404).json({ error: 'No restaurant found' });
+        throw new CustomError(404, 'No restaurant found')
     }
 
     const message = `Review on ${review.restaurantName} by ${review.authorName} has been deleted`
     console.log(message)
     res.json(message)
 })
+
+// @desc Unreserve a table in the restaurant
+// @route DELETE /users/:id/reservations/:reservationId
+// @access Private
+const deleteReservation = asyncHandler(async (req, res) => {
+
+    const reservation = await Reservation.findOneAndDelete({_id: req.params.reservationId})
+
+    if (!reservation) {
+        res.status(404).json({ error: 'Reservation not found'})
+        throw new CustomError(404, 'Reservation not found')
+    } 
+
+    const restaurantId = reservation.restaurantId
+    let restaurantResponse = null
+    let restaurantName = null
+
+    try{
+        restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        restaurantName = restaurantResponse.data.restaurantName
+    } catch (error) {
+        // restaurantId does not exist
+        res.status(404).json({ error: 'Restaurant Not found' });
+        throw new CustomError(404, 'Restaurant Not found')
+    }
+
+    if (reservation.status === "accepted"){
+        const reservedTableNum = reservation.tableNumber
+        
+            
+        const tables = restaurantResponse.data.tables
+        const foundTableIndex = tables.findIndex(table => table.tableNumber === reservedTableNum);
+
+        if (foundTableIndex !== -1) {
+            // Update the isAvailable property within the original tables array
+            tables[foundTableIndex].isAvailable = true;
+        }
+        
+        try{
+            const restaurantResponse2 = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
+                tables: tables,
+            });
+        } catch (error) {
+            console.error("Error updating the restaurant:", error);
+            res.status(500).json({ error: "An error occurred while updating the tables in Restaurant. Please try again." });
+        }
+    
+    }
+
+    const message = `Reservation on ${restaurantName} has been deleted`
+    console.log(message)
+    res.json(message)
+});
 
 // @desc Delete a user
 // @route DELETE /users/:id
@@ -270,8 +337,8 @@ const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findOneAndDelete({_id: req.params.id})
 
     if (!user) {
-        res.status(400).json({ error: 'User not found'})
-        throw new CustomError(400, 'User not found')
+        res.status(404).json({ error: 'User not found'})
+        throw new CustomError(404, 'User not found')
     } 
 
     const message = `Username ${user.username} with ID ${user.id} has been deleted`
@@ -283,10 +350,12 @@ module.exports = {
     getAllUsers,
     getUser,
     getUserReviews,
+    getUserReservations,
     loginUser,
     createNewUser,
     updateUser,
     updateReview,
     deleteReview,
+    deleteReservation,
     deleteUser
 }

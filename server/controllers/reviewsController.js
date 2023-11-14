@@ -1,6 +1,5 @@
 const Review = require('../models/reviewModel')
 const asyncHandler = require('express-async-handler')
-const bcrypt = require('bcrypt')
 const CustomError = require('../utils/customError')
 const axios = require('axios');
 
@@ -82,7 +81,7 @@ const createNewReview = asyncHandler(async (req, res) => {
     }
    
     
-    // Create and store new user
+    // Create and store new review
     const reviewObject = {restaurantId,restaurantName,authorId,authorName,rating,text,language}
     const review = await Review.create(reviewObject)
 

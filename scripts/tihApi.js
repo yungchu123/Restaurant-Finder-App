@@ -3,18 +3,32 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const reservationSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    default: mongoose.Types.ObjectId,
+  restaurantId: {
+      type: String,
+      required: true,
+  },
+  customerId: {
+      type: String,
+      required: true,
   },
   tableNumber: {
-    type: Number,
-    required: true,
+      type: Number,
+  },
+  partySize:{
+      type: Number,
+      required: true,
+  },
+  reservationDate: {
+      type: Date,
+      required: true,
+  },
+  reservationTime: {
+      type: String,
+      required: true,
   },
   status: {
-    type: String,
-    enum: ['available', 'pending', 'accepted', 'declined'],
-    default: 'available',
+      type: String,
+      enum: ['pending', 'accepted', 'declined']
   },
 });
 
@@ -23,7 +37,7 @@ const tableSchema = new mongoose.Schema({
       type: Number,
       required: true
   },
-  tableType: {
+  tableCapacity: {
       type: Number,
       required: true
   },
@@ -34,38 +48,53 @@ const tableSchema = new mongoose.Schema({
 });
 
 const restaurantSchema = new mongoose.Schema({
-    restaurantId: String,
-    restaurantName: String,
-    description: String,
-    rating: Number,
-    numReviews: Number,
-    location: {
-        type: { type: String, enum: ['Point'], required: true },
-        coordinates: { type: [Number], required: true }
-    },
-    cuisine: String,
-    photoReference: String,
-    createdBy: {
+  restaurantId: {
+      type: String,
+      trim: true,
+  },
+  restaurantName: {
+      type: String,
+      trim: true,
+  },
+  description: {
+      type: String,
+  },
+  rating: {
+      type: Number,
+      default: 5.0
+  },
+  numReviews: {
+      type: Number,
+  },
+  location: {
+      type: { type: String, enum: ['Point'], required: true },
+      coordinates: { type: [Number], required: true },
+  },
+  cuisine: {
+      type: String,
+      enum: ['Chinese', 'Thai', 'Indian', 'Mexican', 'Western', 'Japanese', 'Korean', 'Italian', 'Vietnamese', 'Muslim', 'French', 'Spanish', 'American']
+  },
+  photoReference: {
+      type: String,
+      default: null
+  },
+  createdBy: {
       type: String,
       default: null,
       trim: true
-    },
-    reservations: {
-      type: [reservationSchema], 
-      default: []
-    },
-    tables: {
+  },
+  tables: {
       type: [tableSchema],
       default: function() {
           return Array.from({ length: 15 }, (_, index) => ({
               tableNumber: index + 1,
-              tableType: index < 3 || index >= 12 ? 2 : 4,
+              tableCapacity: index < 5 ? 2 : (index < 10 ? 4 : (index < 13 ? 6 : 8)),
               isAvailable: true
           }));
       }
   }
-
 });
+
 restaurantSchema.index({ location: '2dsphere' });
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 

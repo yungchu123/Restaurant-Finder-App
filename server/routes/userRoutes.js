@@ -14,6 +14,9 @@ router
   .delete(usersController.deleteUser)
 
 router.get('/:id/reviews', usersController.getUserReviews)
+router.get('/:id/reservations', usersController.getUserReservations)
+
+router.delete('/:id/reservations/:reservationId', usersController.deleteReservation)
 
 router
   .route('/:id/reviews/:reviewId')

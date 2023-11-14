@@ -32,15 +32,12 @@ router
   .get(restaurantController.getTables);
 
 router
-  .route("/:restaurantId/tables/reserve")
+  .route("/:restaurantId/reservations")
+  .get(restaurantController.getRestaurantReservations)
   .post(restaurantController.reserveTable);
 
 router
-  .route("/:restaurantId/tables/unreserve")
-  .post(restaurantController.unreserveTable);
-
-router
-  .route("/:restaurantId/reservations/accept")
-  .post(restaurantController.acceptReservation);
+  .route("/:restaurantId/reservations/:reservationId")
+  .patch(restaurantController.acceptReservation);
 
 module.exports = router;

@@ -1,27 +1,11 @@
 const mongoose = require("mongoose");
 
-const reservationSchema = new mongoose.Schema({
-    _id: {
-      type: String,
-      default: mongoose.Types.ObjectId,
-    },
-    tableNumber: {
-      type: Number,
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ['available', 'pending', 'accepted', 'declined'],
-      default: 'available',
-    },
-  });
-
-  const tableSchema = new mongoose.Schema({
+const tableSchema = new mongoose.Schema({
     tableNumber: {
         type: Number,
         required: true
     },
-    tableType: {
+    tableCapacity: {
         type: Number,
         required: true
     },
@@ -67,16 +51,12 @@ const restaurantSchema = new mongoose.Schema({
         default: null,
         trim: true
     },
-    reservations: {
-        type: [reservationSchema], 
-        default: []
-    },
     tables: {
         type: [tableSchema],
         default: function() {
             return Array.from({ length: 15 }, (_, index) => ({
                 tableNumber: index + 1,
-                tableType: index < 3 || index >= 12 ? 2 : 4,
+                tableCapacity: index < 5 ? 2 : (index < 10 ? 4 : (index < 13 ? 6 : 8)),
                 isAvailable: true
             }));
         }
