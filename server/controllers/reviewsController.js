@@ -84,6 +84,10 @@ const createNewReview = asyncHandler(async (req, res) => {
     if (review) {
         console.log(review)
         res.status(201).json(review)
+
+        // Re-calculate the ratings
+        
+
     } else {
         throw new CustomError(400, 'Invalid review data received')
     }

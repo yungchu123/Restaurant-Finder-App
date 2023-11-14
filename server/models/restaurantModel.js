@@ -47,6 +47,9 @@ const restaurantSchema = new mongoose.Schema({
         type: Number,
         default: 5.0
     },
+    numReviews: {
+        type: Number,
+    },
     location: {
         type: { type: String, enum: ['Point'], required: true },
         coordinates: { type: [Number], required: true },

@@ -38,6 +38,7 @@ const restaurantSchema = new mongoose.Schema({
     restaurantName: String,
     description: String,
     rating: Number,
+    numReviews: Number,
     location: {
         type: { type: String, enum: ['Point'], required: true },
         coordinates: { type: [Number], required: true }
@@ -158,6 +159,7 @@ async function insertData(data, cuisine) {
       restaurantName: restaurant.name,
       description: restaurant.description === "Description" ? restaurant.name : restaurant.description,
       rating: restaurant.rating,
+      numReviews: Math.floor(Math.random()*200),
       location: {
         type: 'Point',
         coordinates: [restaurant.location.longitude, restaurant.location.latitude]
