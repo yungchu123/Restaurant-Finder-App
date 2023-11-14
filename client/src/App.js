@@ -16,8 +16,11 @@ import ProfilePage from "./views/ProfilePage";
 import UpdateProfilePage from "./views/UpdateProfilePage";
 import RestaurantSearchPage from "./views/RestaurantSearchPage";
 import { Routes, Route} from "react-router-dom";
-import { useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import axios from 'axios';
+
+// Create a context
+export const MyContext = createContext();
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,6 +50,7 @@ function App() {
 
     return (
       <div className="App"> 
+      <MyContext.Provider value={{user}}>
             <Navbar role={user.role} name={user.firstName + " " + user.lastName} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>
             <Routes>
                 <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} userRole={user.role}/>} /> 
@@ -92,6 +96,7 @@ function App() {
                 <Route path="*" element={<h2>404 Page not found</h2>}/>
             </Routes>
             <Footer />
+      </MyContext.Provider>
       </div>
     ) 
 }

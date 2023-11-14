@@ -132,7 +132,7 @@ const RestaurantPage = ({isAuthenticated}) => {
                 <span className="text-danger">{errMsg}</span>
               </div>
               
-              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} />}
+              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} setReviews={setReviews} restaurantId={id}/>}
 
               <hr className="mt-4"/>
               {/* Description Section */}
