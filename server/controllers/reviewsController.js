@@ -37,7 +37,7 @@ const createNewReview = asyncHandler(async (req, res) => {
 
     // Missing fields
     console.log("Creating new review")
-    if(!restaurantId || !authorId || !rating || !text){
+    if(!restaurantId || !authorId || rating === undefined || !text){
         res.status(400).json({ error: 'All fields are required' })
         throw new CustomError(400, 'All fields are required')
     }
@@ -54,12 +54,17 @@ const createNewReview = asyncHandler(async (req, res) => {
         
     }
     let restaurantName = null
+    let restaurantNumReviews = null
+    let restaurantRating = null
     let authorName = null
 
     // Get restaurantName and authorName
     try {
         const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
         restaurantName = restaurantResponse.data.restaurantName
+        restaurantNumReviews = restaurantResponse.data.numReviews
+        restaurantRating = restaurantResponse.data.rating
+
     } catch (error) {
         // restaurantId does not exist
         res.status(400).json({ error: 'No restaurant found' });
@@ -85,9 +90,19 @@ const createNewReview = asyncHandler(async (req, res) => {
         console.log(review)
         res.status(201).json(review)
 
-        // Re-calculate the ratings
-        
+        // Re-calculate restaurant ratings
+        restaurantRating = (restaurantRating * restaurantNumReviews + rating)/(++ restaurantNumReviews)
+        restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
 
+        try{
+            const userResponse = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
+                rating: restaurantRating,
+                numReviews: restaurantNumReviews
+            });
+        } catch (error) {
+            console.log(error)
+        }
+        
     } else {
         throw new CustomError(400, 'Invalid review data received')
     }
