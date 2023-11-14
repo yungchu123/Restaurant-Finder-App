@@ -23,14 +23,18 @@ const LoginForm = ({setIsAuthenticated, setUser}) => {
                 console.log('Response data:', response.data);
 
                 setIsAuthenticated(true)
-                setUser(response.data)     
+                setUser(response.data)
                 localStorage.setItem('loginToken', response.data._id) // Store userid as login token in local storage
                 navigate('/')
             })
             .catch(error => {
-                if (error.response) console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
-                else console.log(`Login Error: ${error}`)
-                setErrorMsg("Invalid Username or Password")
+                if (error.response) {
+                    // console.error(`Login Error: ${error.response.data.error} | Status: ${error.response.status}`);
+                    setErrorMsg("Invalid Username or Password")
+                } else {
+                    console.log(`Login Error: ${error}`)
+                    setErrorMsg(`Login Error: ${error}`)
+                }
             });
         
         setErrorMsg("")
