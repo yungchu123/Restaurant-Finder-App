@@ -15,11 +15,12 @@ router
   .get(restaurantController.getRegisteredRestaurants);
 
 router
-  .route("/:id")
+  .route("/:restaurantId")
   .get(restaurantController.getRestaurant)
+  .patch(restaurantController.updateRestaurant)
 
 router
-  .route("/:id/reviews")
+  .route("/:restaurantId/reviews")
   .get(restaurantController.getRestaurantReviews)
 
 router

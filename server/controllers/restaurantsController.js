@@ -98,10 +98,10 @@ const getRegisteredRestaurants = asyncHandler(async (req, res) => {
 });
 
 // @desc Get one restaurant in database
-// @route GET /restaurants/:id
+// @route GET /restaurants/:restaurantId
 // @access Public
 const getRestaurant = asyncHandler(async (req, res) => {
-    const restaurant = await Restaurant.findOne({ restaurantId: { $eq: req.params.id} }).lean()
+    const restaurant = await Restaurant.findOne({ restaurantId: { $eq: req.params.restaurantId} }).lean()
     if (!restaurant) {
         res.status(400).json({ error: 'No Restaurant found'})
         throw new CustomError(400, 'No Restaurant found')
@@ -120,10 +120,10 @@ const getRestaurant = asyncHandler(async (req, res) => {
 })
 
 // @desc Get all reviews for the restaurant
-// @route GET /restaurants/:id/reviews
+// @route GET /restaurants/:restaurantId/reviews
 // @access Private
 const getRestaurantReviews = asyncHandler(async (req, res) => {
-    const reviews = await Review.find({ restaurantId: {$eq: req.params.id} }).lean()
+    const reviews = await Review.find({ restaurantId: {$eq: req.params.restaurantId} }).lean()
     if (!reviews?.length) {
         res.status(400).json({ error: 'No reviews found'})
         throw new CustomError(400, 'No reviews found')
@@ -140,14 +140,15 @@ const createNewRestaurant = async (req, res) => {
             restaurantId = req.body.restaurantId,
             restaurantName = req.body.inputRefValue,
             description = req.body.description,
-            rating = req.body.rating,
             location = req.body.restaurantAddress, 
             cuisine = req.body.cuisine,
             photoReference = req.body.photoReference,
             createdBy = req.body.username
         } = req.body;
         console.log(req.body.inputRefValue)
-
+        
+        const defaultRating = 0;
+        const defaultNumReviews = 0;
         const defaultReservations = [];
            
         const defaultTables = Array.from({ length: 15 }, (_, index) => ({
@@ -160,7 +161,8 @@ const createNewRestaurant = async (req, res) => {
             restaurantId,
             restaurantName,
             description,
-            rating,
+            rating: defaultRating,
+            numReviews: defaultNumReviews,
             location,
             cuisine,
             photoReference,
@@ -178,6 +180,55 @@ const createNewRestaurant = async (req, res) => {
         res.status(500).json({ error: "An error occurred while registering the restaurant. Please try again." });
         }
 };
+
+// @desc Update restaurant details
+// @route PATCH /restaurants/:restaurantId
+// @access Private
+const updateRestaurant = asyncHandler(async (req,res) => {
+    const{
+        restaurantName,
+        description,
+        rating,
+        numReviews,
+        location,
+        cuisine,
+        photoReference,
+        createdBy,
+        reservations,
+        tables
+    } = req.body;
+
+    // Create an object with only the defined fields from req.body
+    const updatedFields = {
+        ...(restaurantName && { restaurantName }),
+        ...(description && { description }),
+        ...(rating && { rating }),
+        ...(numReviews && { numReviews }),
+        ...(location && { location }),
+        ...(cuisine && { cuisine }),
+        ...(photoReference && { photoReference }),
+        ...(createdBy && { createdBy }),
+        ...(reservations && { reservations }),
+        ...(tables && { tables }),
+    };
+
+
+    // Update restaurant and return updated document
+    const updatedRestaurant = await Restaurant.findOneAndUpdate(
+        {restaurantId: req.params.restaurantId},
+        {$set: updatedFields},
+        {new: true, runValidators: true}
+    )
+
+    if (!updatedRestaurant){
+        res.status(400).json({ error: 'Restaurant not found' })
+        throw new CustomError(400, 'Restaurant not found')
+    }
+
+    console.log(updatedRestaurant)
+    res.json(updatedRestaurant)
+})
+
 
 // @desc Get tables of restaurant
 // @route GET /restaurants/:restaurantId/tables
@@ -351,6 +402,7 @@ module.exports = {
     getRestaurant,
     getRestaurantReviews,
     createNewRestaurant,
+    updateRestaurant,
     getTables,
     reserveTable,
     unreserveTable,

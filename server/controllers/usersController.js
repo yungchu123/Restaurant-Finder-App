@@ -3,6 +3,7 @@ const Review = require('../models/reviewModel')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 const CustomError = require('../utils/customError')
+const axios = require('axios');
 
 // @desc Get all users in database
 // @route GET /users
@@ -162,8 +163,8 @@ const updateReview = asyncHandler(async (req,res) => {
     const{restaurantId,authorId,rating,text} = req.body
 
     // Missing fields
-    console.log("Updating user")
-    if(!restaurantId || !authorId || !rating || !text){
+    console.log("Updating review")
+    if(!restaurantId || !authorId || rating === undefined || !text){
         res.status(400).json({ error: 'All fields are required' })
         throw new CustomError(400, 'All fields are required')
     }
@@ -174,17 +175,43 @@ const updateReview = asyncHandler(async (req,res) => {
         text
     }
 
-    console.log(req.params)
     // Update review and return updated document
     const updatedReview = await Review.findOneAndUpdate(
         {_id: req.params.reviewId},
         {$set: updatedFields},
-        {new: true, runValidators: true}
+        {runValidators: true}
     )
 
     if (!updatedReview){
         res.status(400).json({ error: 'Review not found' })
         throw new CustomError(400, 'Review not found')
+    }
+
+    // Re-calculate restaurant ratings
+    let restaurantNumReviews = null
+    let restaurantRating = null
+    const oldRating = updatedReview.rating
+
+    try {
+        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        restaurantNumReviews = restaurantResponse.data.numReviews
+        restaurantRating = restaurantResponse.data.rating
+        
+        restaurantRating = (restaurantRating * restaurantNumReviews - oldRating + rating)/(restaurantNumReviews)
+        restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
+        
+        try{
+            const userResponse = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
+                rating: restaurantRating
+            });
+        } catch (error) {
+            console.log(error)
+        }
+
+    } catch (error) {
+        // restaurantId does not exist
+        res.status(400).json({ error: 'No restaurant found' });
+        throw new CustomError(400, 'No restaurant found')
     }
 
     console.log(updatedReview)
@@ -201,6 +228,35 @@ const deleteReview = asyncHandler(async (req, res) => {
         res.status(400).json({ error: 'Review not found'})
         throw new CustomError(400, 'Review not found')
     } 
+
+    // Re-calculate restaurant ratings
+    const restaurantId = review.restaurantId
+    const rating = review.rating
+    let restaurantNumReviews = null
+    let restaurantRating = null
+
+    try {
+        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        restaurantNumReviews = restaurantResponse.data.numReviews
+        restaurantRating = restaurantResponse.data.rating
+        
+        restaurantRating = (restaurantRating * restaurantNumReviews - rating)/(-- restaurantNumReviews)
+        restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
+        
+        try{
+            const userResponse = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
+                rating: restaurantRating,
+                numReviews: restaurantNumReviews
+            });
+        } catch (error) {
+            console.log(error)
+        }
+
+    } catch (error) {
+        // restaurantId does not exist
+        res.status(400).json({ error: 'No restaurant found' });
+        throw new CustomError(400, 'No restaurant found')
+    }
 
     const message = `Review on ${review.restaurantName} by ${review.authorName} has been deleted`
     console.log(message)
