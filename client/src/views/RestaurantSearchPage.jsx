@@ -49,6 +49,7 @@ const RestaurantSearchPage = () => {
                                     name={restaurant.restaurantName} 
                                     cuisine={restaurant.cuisine} 
                                     rating={restaurant.rating}
+                                    numReviews={restaurant.numReviews}
                                     imgUrl={restaurant.imageData}
                                 />     
                                 </NavLink>

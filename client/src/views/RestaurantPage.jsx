@@ -14,7 +14,6 @@ const RestaurantPage = ({isAuthenticated}) => {
   const [reviews, setReviews] = useState([{}])
   const [position, setPosition] = useState({ latt: '1.3394', long: '103.7054'})
 
-  const noOfReviews = 150
   const status = true // Open or not
 
   const { id } = useParams();
@@ -111,7 +110,7 @@ const RestaurantPage = ({isAuthenticated}) => {
               <div style={pageContainer}>
                   <div style={bottomContent}>
                       <h1>{restaurant.restaurantName}</h1>
-                      <p>{generateStar(restaurant.rating)}<span className="ms-3">{restaurant.rating} ({noOfReviews} reviews)</span></p>
+                      <p>{generateStar(restaurant.rating)}<span className="ms-3">{restaurant.rating} ({restaurant.numReviews} reviews)</span></p>
                       <h5>{status ? <span className="badge bg-success">Open</span> : <span className="badge bg-danger">Closed</span>}</h5>
                   </div>
               </div>
