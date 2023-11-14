@@ -31,7 +31,7 @@ function App() {
   
       if (loginToken) {
           (async () => {
-            axios.get(`http://localhost:5001/api/users/${loginToken}`)
+            axios.get(`${process.env.REACT_APP_SERVER_URL}/api/users/${loginToken}`)
             .then(response => {
                 console.log('User data:', response.data);
                 setIsAuthenticated(true)
