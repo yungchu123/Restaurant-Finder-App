@@ -36,3 +36,11 @@
     font-size: 40px; 
     font-weight: bold;
 }
+
+.vertical-line {
+    border-left: 2px solid #585C5E; /* Customize the color and width of the line */
+    height: 100%; /* Make the line extend the full height of the column */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
