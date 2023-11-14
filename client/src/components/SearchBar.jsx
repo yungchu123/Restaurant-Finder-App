@@ -1,13 +1,26 @@
 import { useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom";
 
-const SearchBar = ({setLocation}) => {
-    const [value, setValue] = useState('');
+const SearchBar = ({location, setLocation}) => {
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const [value, setValue] = useState(location);
+
+    console.log(pathname)
 
     const handleSubmit = (e) => {
         e.preventDefault()
         // VALIDATION
+        
 
-        setLocation(value)
+        // Redirect to search page if not there
+        if (pathname !== '/restaurant/search') {
+            navigate('/restaurant/search', { replace: true, state: {
+                location: value
+            }})
+        } else {
+            setLocation(value)
+        }
     }
 
     return (
