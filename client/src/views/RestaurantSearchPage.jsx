@@ -42,6 +42,11 @@ const RestaurantSearchPage = () => {
                     </div>
                     {/* List of Restaurants */}
                     <div className="row row-cols-4 row-gap-5 mb-5">
+                        {restaurants.length === 0 && (
+                            <div className="d-flex align-items-center">
+                                <h2>Loading ...</h2>
+                            </div>
+                        )}
                         {restaurants.map(restaurant => (
                             <div className="col">
                                 <NavLink to={`../restaurant/${restaurant.restaurantId}`}> 

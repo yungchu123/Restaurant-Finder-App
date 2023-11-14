@@ -1,4 +1,3 @@
-import logo from '../images/foodImage.png';
 import React, { useState, useEffect } from 'react';
 import ReservationCard from '../components/ReservationCard';
 import '../index.css';
@@ -64,7 +63,7 @@ const RestaurantPage = ({isAuthenticated}) => {
     width: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'repeat-x',
-    backgroundImage: `url(${logo})`,
+    backgroundImage: `url(${restaurant.imageData})`,
   }
 
   const darkOverlay = {
@@ -102,6 +101,13 @@ const RestaurantPage = ({isAuthenticated}) => {
       </span>
   }
 
+  if (Object.keys(restaurant).length === 0) {
+      return (
+          <div style={{height:'80vh'}} className="d-flex align-items-center justify-content-center">
+            <h1>Loading ...</h1>
+          </div>
+      )
+  }
   return (
     <>
       <div>
