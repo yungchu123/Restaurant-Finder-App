@@ -8,7 +8,9 @@ const axios = require('axios')
 // @route GET /restaurants
 // @access Public
 const getAllRestaurants = asyncHandler(async (req, res) => {
-    const restaurants = await Restaurant.find().lean();
+    const limit = req.query.limit || 20; // Default limit value of 20
+    const restaurants = await Restaurant.find().limit(limit).lean();
+
     if (!restaurants?.length) {
         res.status(400).json({ error: 'No Restaurants found' });
         throw new CustomError(400, 'No Restaurants found');
@@ -25,6 +27,8 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
                 console.error('Error fetching image:', error);
             }
         }
+        console.log('A')
+        console.log(restaurant)
         return restaurant;
     }));
 
