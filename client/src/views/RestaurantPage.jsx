@@ -1,13 +1,51 @@
-import logo from '../images/foodImage.png';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReservationCard from '../components/ReservationCard';
 import '../index.css';
 import ReviewCard from '../components/ReviewCard';
 import AddReviewCard from '../components/AddReviewCard';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const RestaurantPage = ({restaurant, isAuthenticated}) => {
+const RestaurantPage = ({isAuthenticated}) => {
   const [displayAddReview, setDisplayAddReview] = useState(false)
   const [errMsg, setErrMsg] = useState('')
+  const [restaurant, setRestaurant] = useState({})
+  const [reviews, setReviews] = useState([{}])
+  const [position, setPosition] = useState({ latt: '1.3394', long: '103.7054'})
+
+  const status = true // Open or not
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    // Get detail of one restaurant from backend
+    (async () => {
+      axios.get(`${process.env.REACT_APP_SERVER_URL}/api/restaurants/${id}`)
+      .then(response => {
+          console.log('Restaurant Details:', response.data);
+          setRestaurant(response.data);
+          setPosition({
+              latt: response.data.location.coordinates[1],
+              long: response.data.location.coordinates[0]
+          })
+      })
+      .catch(error => {
+          console.log(`Error: ${error}`)
+      });
+    })();
+
+    // Get a list of reviews from backend
+    (async () => {
+        axios.get(`${process.env.REACT_APP_SERVER_URL}/api/restaurants/${id}/reviews`)
+        .then(response => {
+            console.log('Reviews:', response.data);
+            setReviews(response.data);
+        })
+        .catch(error => {
+            console.log(`Error: ${error}`)
+        });
+    })();
+  }, [id]);
 
   // Only Login User can add review
   const handleAddReviewDisplay = () => {
@@ -25,7 +63,7 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
     width: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'repeat-x',
-    backgroundImage: `url(${logo})`,
+    backgroundImage: `url(${restaurant.imageData})`,
   }
 
   const darkOverlay = {
@@ -45,24 +83,6 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
       margin: "auto"
   }
 
-  // Restaurant Attributes
-  const rating = 3.0
-  const reviews = 150
-  const status = true // Open or not
-  const position = { lat: '1.3394', lon: '103.7054'}
-  const reviewList = [
-      {
-        authorName: "Stephanie Chan",
-        rating: 5,
-        text: "Straits Chinese Signatures Restaurant serves pretty decent Nonya dishes. There are other Nonya restaurants options with elaborated deco & nice ambience, well plated dishes but you’d have to pay more. So this is a worth to try for a middle range $$ restaurant compared to the rest."
-      },
-      {
-        authorName: "SiewShuen Ng",
-        rating: 4,
-        text: "It was very easy liaise with them when I had to order for a corporate meeting. Communication was efficient and polite from the point of order to the delivery. We ordered their bowls and bento that were big in portion and tasted great. And the food was still pretty hot when delivered. Would definitely recommend them and will try their other dishes in their restaurant."
-      }
-  ]
-
   const generateStar = (rating) => {
       return <span>
           {
@@ -81,6 +101,13 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
       </span>
   }
 
+  if (Object.keys(restaurant).length === 0) {
+      return (
+          <div style={{height:'80vh'}} className="d-flex align-items-center justify-content-center">
+            <h1>Loading ...</h1>
+          </div>
+      )
+  }
   return (
     <>
       <div>
@@ -88,8 +115,8 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
           <div style={darkOverlay}>
               <div style={pageContainer}>
                   <div style={bottomContent}>
-                      <h1>Dian Xiao Er</h1>
-                      <p>{generateStar(rating)}<span className="ms-3">{rating} ({reviews} reviews)</span></p>
+                      <h1>{restaurant.restaurantName}</h1>
+                      <p>{generateStar(restaurant.rating)}<span className="ms-3">{restaurant.rating} ({restaurant.numReviews} reviews)</span></p>
                       <h5>{status ? <span className="badge bg-success">Open</span> : <span className="badge bg-danger">Closed</span>}</h5>
                   </div>
               </div>
@@ -105,7 +132,7 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
                 <span className="text-danger">{errMsg}</span>
               </div>
               
-              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} />}
+              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} setReviews={setReviews} restaurantId={id}/>}
 
               <hr className="mt-4"/>
               {/* Description Section */}
@@ -120,7 +147,7 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
                   <div className="col-sm-7">
                     <iframe 
                     title="google map"
-                    src={`https://maps.google.com/maps?q=${position.lat},${position.lon}&z=15&output=embed`}
+                    src={`https://maps.google.com/maps?q=${position.latt},${position.long}&z=15&output=embed`}
                     width="360" height="270" frameborder="0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                     </iframe>
                       <p className="mt-3">
@@ -136,8 +163,8 @@ const RestaurantPage = ({restaurant, isAuthenticated}) => {
 
               {/* Reviews Section */}
               <h3 className="mb-3">Reviews</h3>
-              {reviewList.map(review => (
-                  <div className="mb-4">
+              {reviews.map(review => (
+                  <div className="mb-4" key={review._id}>
                       <ReviewCard authorName={review.authorName} rating={review.rating} description={review.text}/>
                   </div>
               ))}

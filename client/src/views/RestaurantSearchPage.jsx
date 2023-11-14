@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar"
 import Sortbar from "../components/Sortbar"
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { NavLink } from "react-router-dom";
 
 const RestaurantSearchPage = () => {
     const [restaurants, setRestaurants] = useState([])
@@ -41,26 +42,26 @@ const RestaurantSearchPage = () => {
                     </div>
                     {/* List of Restaurants */}
                     <div className="row row-cols-4 row-gap-5 mb-5">
+                        {restaurants.length === 0 && (
+                            <div className="d-flex align-items-center">
+                                <h2>Loading ...</h2>
+                            </div>
+                        )}
                         {restaurants.map(restaurant => (
                             <div className="col">
+                                <NavLink to={`../restaurant/${restaurant.restaurantId}`}> 
                                 <RestaurantCard 
                                     name={restaurant.restaurantName} 
                                     cuisine={restaurant.cuisine} 
                                     rating={restaurant.rating}
+                                    numReviews={restaurant.numReviews}
                                     imgUrl={restaurant.imageData}
-                                />
+                                />     
+                                </NavLink>
                             </div>
                         ))}
                     </div>
                 </div>
-                {/* <div class="col-sm-5">
-                    <iframe
-                    title="google map"
-                    src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d29038.707431301053!2d103.69705958315535!3d1.3440332249986962!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2ssg!4v1699270816843!5m2!1sen!2ssg"
-                    width="100%" height="400px" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div> */}
-
             </div>
             
         </>

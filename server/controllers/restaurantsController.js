@@ -27,8 +27,6 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
                 console.error('Error fetching image:', error);
             }
         }
-        console.log('A')
-        console.log(restaurant)
         return restaurant;
     }));
 
@@ -58,6 +56,16 @@ const getRestaurant = asyncHandler(async (req, res) => {
         res.status(400).json({ error: 'No Restaurant found'})
         throw new CustomError(400, 'No Restaurant found')
     }
+    if (restaurant.photoReference) {
+      const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${restaurant.photoReference}&key=${process.env.GOOGLE_API_KEY}`;
+      try {
+          const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+          const base64 = Buffer.from(imageResponse.data, 'binary').toString('base64');
+          restaurant.imageData = `data:${imageResponse.headers['content-type']};base64,${base64}`;
+      } catch (error) {
+          console.error('Error fetching image:', error);
+      }
+  }
     res.json(restaurant)
 })
 

@@ -2,11 +2,11 @@ import React from 'react'
 import '../index.css';
 // import Star from './Star'
 
-const RestaurantCard = ({name, cuisine, rating, reviews, imgUrl}) => {
+const RestaurantCard = ({name, cuisine, rating, numReviews, imgUrl}) => {
 
     return (
         <>
-            <a class="icon-link icon-link-hover" href="/restaurant/page" style={{ color: 'rgb(33, 37, 41)', textDecoration: 'none' }}>
+            <div class="icon-link icon-link-hover">
                 <div class="card card-hover" style={{ width: '18rem', position: 'relative' }}>
                     {/* Image */}
                     <img style={{height: '150px', objectFit: 'cover'}}
@@ -20,11 +20,11 @@ const RestaurantCard = ({name, cuisine, rating, reviews, imgUrl}) => {
                         </p>
                         <p className="card-text">
                         <span className="me-3"><i class="bi bi-star-fill me-1"></i> {rating}</span>
-                        <span className="text-secondary"> ({reviews} reviews)</span>
+                        <span className="text-secondary"> ({numReviews} reviews)</span>
                         </p>
                     </div>
                 </div>
-            </a>
+            </div>
         </>
     )
 }
