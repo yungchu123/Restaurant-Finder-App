@@ -35,7 +35,6 @@ connectDB();
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/restaurants", require("./routes/restaurantRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
-app.use("/api/restaurants2", require("./routes/restaurantRoutes2"));
 
 // Start Server
 app.listen(PORT, () => {

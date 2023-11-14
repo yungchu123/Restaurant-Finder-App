@@ -7,6 +7,10 @@ router
   .get(restaurantController.getAllRestaurants)
 
 router
+  .route("/nearby")
+  .get(restaurantController.getNearbyRestaurants);
+
+router
   .route('/registered/:username')
   .get(restaurantController.getRegisteredRestaurants);
 

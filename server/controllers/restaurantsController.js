@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const CustomError = require('../utils/customError')
 const Restaurant = require('../models/restaurantModel')
 const Review = require('../models/reviewModel')
+const getCoordinates = require('../utils/getCoordinates')
 const axios = require('axios')
 
 // @desc Get all restaurants in database
@@ -23,6 +24,7 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
                 const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
                 const base64 = Buffer.from(imageResponse.data, 'binary').toString('base64');
                 restaurant.imageData = `data:${imageResponse.headers['content-type']};base64,${base64}`;
+                console.log(restaurant)
             } catch (error) {
                 console.error('Error fetching image:', error);
             }
@@ -31,6 +33,54 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
     }));
 
     res.json(updatedRestaurants);
+});
+
+// @desc Get nearby restaurants within radius of an address/postal code and sort by distance or ratings
+// @route GET /restaurants2/nearby
+// @access Public
+const getNearbyRestaurants = asyncHandler(async (req, res) => {
+  const address = req.query.address;
+  const sort = req.query.sort;
+  const limit = req.query.limit || 20;
+  const [longitude, latitude] = await getCoordinates(address);
+  
+  let sortCriteria = {};
+  if(sort === 'rating'){
+    sortCriteria = {rating: -1};
+  } else if(sort === 'distance'){} // mongoDB automatically sorts by distance when using nearSphere
+  const nearbyRestaurants = await Restaurant.find({
+    location: {
+      $nearSphere: {
+        $geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude]
+        },
+        $maxDistance:10000
+      }
+    }
+  }).sort(sortCriteria).limit(limit);
+
+  if (!nearbyRestaurants?.length) {
+    return res.status(200).json({ message: 'No restaurants found' });
+  }
+
+  const updatedRestaurants = await Promise.all(nearbyRestaurants.map(async (restaurant) => {
+    if (restaurant.photoReference) {
+        const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${restaurant.photoReference}&key=${process.env.GOOGLE_API_KEY}`;
+        try {
+            const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+            const base64 = Buffer.from(imageResponse.data, 'binary').toString('base64');
+            restaurant.imageData = `data:${imageResponse.headers['content-type']};base64,${base64}`;
+            console.log(`data:${imageResponse.headers['content-type']};base64,${base64}`)
+        } catch (error) {
+            console.error('Error fetching image:', error);
+        }
+    }
+    
+    return restaurant;
+}));
+
+  res.json(updatedRestaurants);
 });
 
 // @desc Get all restaurants registered by a specific user
@@ -65,7 +115,7 @@ const getRestaurant = asyncHandler(async (req, res) => {
       } catch (error) {
           console.error('Error fetching image:', error);
       }
-  }
+    }
     res.json(restaurant)
 })
 
@@ -296,6 +346,7 @@ const acceptReservation = async (req, res) => {
 
 module.exports = {
     getAllRestaurants,
+    getNearbyRestaurants,
     getRegisteredRestaurants,
     getRestaurant,
     getRestaurantReviews,

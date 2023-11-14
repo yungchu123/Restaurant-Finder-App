@@ -7,27 +7,33 @@ import axios from 'axios';
 import { NavLink } from "react-router-dom";
 
 const RestaurantSearchPage = () => {
+    const [location, setLocation] = useState('')
+    const [sortValue, setSortValue] = useState('distance')
     const [restaurants, setRestaurants] = useState([])
 
     useEffect(() => {
-        // Pull a list of restaurants from backend
-        (async () => {
-            const limit = 20;
-            axios.get(`${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`)
-            .then(response => {
+        // Pull a list of restaurants from the backend
+        const fetchData = async () => {
+            try {
+                const limit = 20;
+                const url = location ? `${process.env.REACT_APP_SERVER_URL}/api/restaurants/nearby?address=${location}&sort=${sortValue}` : `${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`
+                const response = await axios.get(url);
                 console.log('Restaurants:', response.data);
-                setRestaurants(response.data)
-            })
-            .catch(error => {
-                console.log(`Error: ${error}`)
-            });
-        })();
-      }, []);
+                setRestaurants(response.data);
+            } catch (error) {
+                console.log(`Error: ${error}`);
+            }
+        };
+    
+        // Call the async function
+        fetchData();
+    }, [location, sortValue]);
 
     return (
         <>
             <div className="container mt-4 mb-5">
-                <SearchBar/>
+                <SearchBar setLocation={setLocation}/>
+                <h3>Location: {location}</h3>
             </div>
             <div className="row mx-0">
                 {/* Filter Side Bar */}
@@ -38,7 +44,7 @@ const RestaurantSearchPage = () => {
                     {/* Search Result and Sort Bar */}
                     <div className="d-flex justify-content-between mb-4">
                         <h5>Search Results: {restaurants.length} </h5>
-                        <Sortbar />
+                        <Sortbar sortValue={sortValue} setSortValue={setSortValue}/>
                     </div>
                     {/* List of Restaurants */}
                     <div className="row row-cols-4 row-gap-5 mb-5">
