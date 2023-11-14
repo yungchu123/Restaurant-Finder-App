@@ -100,7 +100,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     // Hash password
     const hashedPwd = await bcrypt.hash(password,10)
-    const userObject = {firstName, lastName, username, "password":hashedPwd, email, role}
+    const userObject = {firstName, lastName, username, "password":hashedPwd, email, role, favourites: []}
 
     // Create and store new user
     const user = await User.create(userObject)
@@ -119,28 +119,20 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
     const {firstName, lastName, password, email} = req.body
-
-    // Missing fields
     console.log("Updating user")
     if(!firstName || !lastName || !email){
         res.status(400).json({ error: 'All fields are required' })
         throw new CustomError(400, 'All fields are required')
     }
-
-    // Prepare updated fields
     const updatedFields = {
         firstName,
         lastName,
         email
     }
-
     if (password){
-        // Hash password
         const hashedPassword = await bcrypt.hash(password,10)
         updatedFields.password = hashedPassword
     }
-
-    // Update user and return updated document
     const updatedUser = await User.findOneAndUpdate(
         {_id: req.params.id},
         {$set: updatedFields},
@@ -253,7 +245,6 @@ const deleteReview = asyncHandler(async (req, res) => {
         }
 
     } catch (error) {
-        // restaurantId does not exist
         res.status(400).json({ error: 'No restaurant found' });
         throw new CustomError(400, 'No restaurant found')
     }
@@ -279,6 +270,63 @@ const deleteUser = asyncHandler(async (req, res) => {
     res.json(message)
 })
 
+// @desc Add a restaurant to favourites
+// @route PUT /users/:id/favourites
+// @access Private
+const addFavorite = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const restaurantId = req.body.restaurantId;
+    if (!restaurantId) {
+        res.status(400).json({ error: 'Restaurant ID is required' });
+        throw new CustomError(400, 'Restaurant ID is required');
+    }
+    const user = await User.findByIdAndUpdate(userId, {
+        $addToSet: { favorites: restaurantId }
+    }, { new: true });
+    if (!user) {
+        res.status(400).json({ error: 'User not found' });
+        throw new CustomError(400, 'User not found');
+    }
+
+    res.json(user);
+});
+
+// @desc Remove a restaurant from favourites
+// @route DELETE /users/:id/favorites
+// @access Private
+const removeFavorite = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const restaurantId = req.body.restaurantId;
+    if (!restaurantId) {
+        res.status(400).json({ error: 'Restaurant ID is required' });
+        throw new CustomError(400, 'Restaurant ID is required');
+    }
+
+    const user = await User.findByIdAndUpdate(userId, {
+        $pull: { favorites: restaurantId }
+    }, { new: true });
+
+    if (!user) {
+        res.status(400).json({ error: 'User not found' });
+        throw new CustomError(400, 'User not found');
+    }
+
+    res.json(user);
+});
+
+// @desc Get all favourite restaurants for user
+// @route GET /users/:id/favorites
+// @access Public
+const getFavorites = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const user = await User.findById(userId).populate('favorites').lean();
+    if (!user) {
+        res.status(400).json({ error: 'User not found' });
+        throw new CustomError(400, 'User not found');
+    }
+    res.json(user.favorites);
+});
+
 module.exports = {
     getAllUsers,
     getUser,
@@ -288,5 +336,8 @@ module.exports = {
     updateUser,
     updateReview,
     deleteReview,
-    deleteUser
+    deleteUser,
+    addFavorite,
+    removeFavorite,
+    getFavorites
 }

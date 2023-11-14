@@ -36,6 +36,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     enum: ["customer", "restaurateur"],
   },
+  favorites: [{
+    type: String
+  }]
 });
 
 const User = mongoose.model("User", userSchema);

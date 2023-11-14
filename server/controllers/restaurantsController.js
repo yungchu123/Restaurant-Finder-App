@@ -67,7 +67,6 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
   console.log(nearbyRestaurants);
 
   const updatedRestaurants = await Promise.all(nearbyRestaurants.map(async (restaurant) => {
-    // Clone the restaurant object
     let updatedRestaurant = {...restaurant._doc}; 
 
     if (updatedRestaurant.photoReference) {
