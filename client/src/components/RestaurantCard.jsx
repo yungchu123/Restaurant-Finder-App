@@ -6,7 +6,7 @@ const RestaurantCard = ({name, cuisine, rating, reviews, imgUrl}) => {
 
     return (
         <>
-            <a class="icon-link icon-link-hover" href="/restaurant/page" style={{ color: 'rgb(33, 37, 41)', textDecoration: 'none' }}>
+            <div class="icon-link icon-link-hover">
                 <div class="card card-hover" style={{ width: '18rem', position: 'relative' }}>
                     {/* Image */}
                     <img style={{height: '150px', objectFit: 'cover'}}
@@ -24,7 +24,7 @@ const RestaurantCard = ({name, cuisine, rating, reviews, imgUrl}) => {
                         </p>
                     </div>
                 </div>
-            </a>
+            </div>
         </>
     )
 }

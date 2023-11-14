@@ -27,8 +27,6 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
                 console.error('Error fetching image:', error);
             }
         }
-        console.log('A')
-        console.log(restaurant)
         return restaurant;
     }));
 

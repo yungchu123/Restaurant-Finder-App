@@ -69,7 +69,6 @@ function App() {
                 {/* Pages for Restaurant Owner Only */}
                 { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
                   <>
-                      <Route path="/" element={<RestaurantOwnerDashboard />} />
                       <Route path="/restaurant/manage" element={<ManageRestaurantPage/>}/>
                       <Route path="/managereservationcard" element={<ManageReservationCard/>}/>
                   </>
@@ -85,7 +84,7 @@ function App() {
                 )}
 
                 {/* Pages for public */}
-                <Route path="/restaurant/page" element={<RestaurantPage isAuthenticated={isAuthenticated}/>}/> 
+                <Route path="/restaurant/:id" element={<RestaurantPage isAuthenticated={isAuthenticated}/>}/> 
                 <Route path="/restaurant/search" element={<RestaurantSearchPage />} />
                 <Route path="/aboutus" element={<AboutUs/>}/>
                 <Route path="/contactus" element={<ContactUs/>}/>
