@@ -36,7 +36,7 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 });
 
 // @desc Get nearby restaurants within radius of an address/postal code and sort by distance or ratings
-// @route GET /restaurants2/nearby
+// @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
   const address = req.query.address;
@@ -55,7 +55,7 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
           type: "Point",
           coordinates: [longitude, latitude]
         },
-        $maxDistance:10000
+        $maxDistance:1000
       }
     }
   }).sort(sortCriteria).limit(limit);
@@ -64,23 +64,27 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
     return res.status(200).json({ message: 'No restaurants found' });
   }
 
+  console.log(nearbyRestaurants);
+
   const updatedRestaurants = await Promise.all(nearbyRestaurants.map(async (restaurant) => {
-    if (restaurant.photoReference) {
-        const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${restaurant.photoReference}&key=${process.env.GOOGLE_API_KEY}`;
+    // Clone the restaurant object
+    let updatedRestaurant = {...restaurant._doc}; 
+
+    if (updatedRestaurant.photoReference) {
+        const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${updatedRestaurant.photoReference}&key=${process.env.GOOGLE_API_KEY}`;
         try {
             const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
             const base64 = Buffer.from(imageResponse.data, 'binary').toString('base64');
-            restaurant.imageData = `data:${imageResponse.headers['content-type']};base64,${base64}`;
-            console.log(`data:${imageResponse.headers['content-type']};base64,${base64}`)
+            updatedRestaurant.imageData = `data:${imageResponse.headers['content-type']};base64,${base64}`;
         } catch (error) {
             console.error('Error fetching image:', error);
         }
     }
-    
-    return restaurant;
+    return updatedRestaurant;
 }));
 
-  res.json(updatedRestaurants);
+res.json(updatedRestaurants);
+
 });
 
 // @desc Get all restaurants registered by a specific user
