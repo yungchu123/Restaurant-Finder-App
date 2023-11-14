@@ -1,35 +1,27 @@
 import React, { useState } from 'react'
 import SidebarCategory from './SidebarCategory'
 
-const Sidebar = () => {
-    const [priceFilter, setPriceFilter] = useState({
-        cheap: false,
-        affordable: false,
-        expensive: false,
-        luxury: false
-    })
-
+const Sidebar = ({setDistanceFilter, setFilter}) => {
     const [cuisineFilter, setCuisineFilter] = useState({
         chinese: false,
-        malay: false,
+        muslim: false,
         indian: false,
         western: false,
         japanese: false,
         korean: false,
-        vietnamese: false
+        vietnamese: false,
+        thai: false,
+        italian: false,
+        american: false,
+        french: false,
+        mexican: false
     })
 
-    const [dietaryFilter, setDietaryFilter] = useState({
-        halal: false,
-        vegetarian: false,
-        "dairy-free": false,
-        "gluten-free": false
-    })
+    const [distanceOption, setDistanceOption] = useState('1000')
 
     const resetFilter = () => {
-        setPriceFilter(setAllKeysToFalse(priceFilter))
         setCuisineFilter(setAllKeysToFalse(cuisineFilter))
-        setDietaryFilter(setAllKeysToFalse(dietaryFilter))
+        setDistanceOption('1000')
     }
 
     const setAllKeysToFalse = (obj) => {
@@ -40,6 +32,11 @@ const Sidebar = () => {
         return newObj
     } 
 
+    const handleFilter = () => {
+        setFilter({...cuisineFilter})
+        setDistanceFilter(distanceOption)
+    }
+
     return (
         <>
         <div className="container mb-3 px-4 border-end">
@@ -47,13 +44,62 @@ const Sidebar = () => {
                 <p><strong>Filter</strong></p>
                 <span onClick={resetFilter}>
                     <i class="bi bi-arrow-clockwise me-2"></i>
-                    Clear
+                    Reset
                 </span>
             </div>
-            <SidebarCategory title="Price" filter={priceFilter} setFilter={setPriceFilter}/> 
-            <SidebarCategory title="Cuisine" filter={cuisineFilter} setFilter={setCuisineFilter}/> 
-            <SidebarCategory title="Dietary Requirement" filter={dietaryFilter} setFilter={setDietaryFilter}/>
-            <button className="btn btn-primary">Apply</button>
+            <SidebarCategory title="Cuisine" filter={cuisineFilter} setFilter={setCuisineFilter}/>
+            
+            {/* Select Distance Filter */}
+            <header className="mb-2">Distance</header>
+            <div className='form-check'>
+                <label className='form-check-label'>
+                <input
+                    className='form-check-input'
+                    type="radio"
+                    value="1000"
+                    checked={distanceOption === '1000'}
+                    onChange={e => setDistanceOption(e.target.value)}
+                />
+                Brisk Walk (1 km)
+                </label>
+            </div>
+            <div className='form-check'>
+                <label className='form-check-label'>
+                <input
+                    className='form-check-input'
+                    type="radio"
+                    value="2000"
+                    checked={distanceOption === '2000'}
+                    onChange={e => setDistanceOption(e.target.value)}
+                />
+                On Foot (2 km)
+                </label>
+            </div>
+            <div className='form-check'>
+                <label className='form-check-label'>
+                <input
+                    className='form-check-input'
+                    type="radio"
+                    value="4000"
+                    checked={distanceOption === '4000'}
+                    onChange={e => setDistanceOption(e.target.value)}
+                />
+                Bike (4 km)
+                </label>
+            </div>
+            <div className='form-check'>
+                <label className='form-check-label'>
+                <input
+                    className='form-check-input'
+                    type="radio"
+                    value="8000"
+                    checked={distanceOption === '8000'}
+                    onChange={e => setDistanceOption(e.target.value)}
+                />
+                Drive (8 km)
+                </label>
+            </div>
+            <button className="btn btn-primary mt-4" onClick={handleFilter}>Apply</button>
         </div>
         </>
     )

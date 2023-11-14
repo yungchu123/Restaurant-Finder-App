@@ -8,17 +8,24 @@ import { NavLink, useLocation } from "react-router-dom";
 
 const RestaurantSearchPage = () => {
     const { state } = useLocation();
-    const [location, setLocation] = useState(state.location)
+    const [location, setLocation] = useState(state ? state.location : '')
     const [sortValue, setSortValue] = useState('distance')
     const [restaurants, setRestaurants] = useState([])
+    const [filteredRestaurants, setFilteredRestaurants] = useState([]);
     const [loading, setLoading] = useState(true)
+
+    // Filter
+    const [filter, setFilter] = useState({})
+    const [distanceFilter, setDistanceFilter] = useState('1000')
 
     useEffect(() => {
         // Pull a list of restaurants from the backend
         const fetchData = async () => {
             try {
                 const limit = 20;
-                const url = location ? `${process.env.REACT_APP_SERVER_URL}/api/restaurants/nearby?address=${location}&sort=${sortValue}` : `${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`
+                const url = location ? 
+                `${process.env.REACT_APP_SERVER_URL}/api/restaurants/nearby?address=${location}&sort=${sortValue}&distance=${distanceFilter}` :
+                `${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`
                 const response = await axios.get(url);
                 console.log('Restaurants:', response.data);
                 if (response.data.message === "No restaurants found") {
@@ -36,7 +43,18 @@ const RestaurantSearchPage = () => {
         setLoading(true)
         setRestaurants([])
         fetchData();
-    }, [location, sortValue]);
+    }, [location, sortValue, distanceFilter]);
+
+    useEffect(() => {
+        if (Object.values(filter).every(value => value === false)) {
+            // No filter present
+            setFilteredRestaurants([...restaurants])
+        } else {
+            // Filter Present
+            setFilteredRestaurants(restaurants.filter(restaurant => filter[restaurant.cuisine.toLowerCase()]))
+        }
+    }, [restaurants, filter]);
+
 
     return (
         <>
@@ -47,12 +65,12 @@ const RestaurantSearchPage = () => {
             <div className="row mx-0">
                 {/* Filter Side Bar */}
                 <div className="col-sm-2">
-                    <Sidebar />
+                    <Sidebar setFilter={setFilter} setDistanceFilter={setDistanceFilter}/>
                 </div>
                 <div className="col-sm-10">
                     {/* Search Result and Sort Bar */}
                     <div className="d-flex justify-content-between mb-4">
-                        <h5>Search Results: {restaurants.length}</h5>
+                        <h5>Search Results: {filteredRestaurants.length}</h5>
                         <Sortbar sortValue={sortValue} setSortValue={setSortValue}/>
                     </div>
                     {/* List of Restaurants */}
@@ -62,10 +80,10 @@ const RestaurantSearchPage = () => {
                             <h2 className="col-8">Loading ...</h2>
                         )}
                         {/* No Restaurant Found */}
-                        {!loading && restaurants.length === 0 && (
+                        {!loading && filteredRestaurants.length === 0 && (
                             <h2 className="col-8">No restaurant found &#128546;</h2>
                         )}
-                        {restaurants.map(restaurant => (
+                        {filteredRestaurants.map(restaurant => (
                             <div className="col">
                                 <NavLink to={`../restaurant/${restaurant.restaurantId}`}> 
                                 <RestaurantCard 

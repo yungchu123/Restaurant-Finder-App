@@ -41,7 +41,8 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
   const address = req.query.address;
   const sort = req.query.sort;
-  const limit = req.query.limit || 20;
+  const limit = req.query.limit || 40;
+  const maxDist = req.query.distance || 1000;
   const [longitude, latitude] = await getCoordinates(address);
   
   let sortCriteria = {};
@@ -55,7 +56,7 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
           type: "Point",
           coordinates: [longitude, latitude]
         },
-        $maxDistance:1000
+        $maxDistance: maxDist
       }
     }
   }).sort(sortCriteria).limit(limit);
