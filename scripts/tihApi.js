@@ -188,7 +188,7 @@ async function insertData(data, cuisine) {
       restaurantName: restaurant.name,
       description: restaurant.description === "Description" ? restaurant.name : restaurant.description,
       rating: restaurant.rating,
-      numReviews: Math.floor(Math.random()*200),
+      numReviews: restaurant.rating !== 0 ? Math.floor(Math.random() * 200) : 0,
       location: {
         type: 'Point',
         coordinates: [restaurant.location.longitude, restaurant.location.latitude]
@@ -232,12 +232,6 @@ async function insertData(data, cuisine) {
     console.error('Failed to insert data into MongoDB:', err);
   }
 } 
-
-// async function getPlacePhotoUrl(photoReference) {
-    
-//     const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&maxheight=1000&photoreference=${photoReference}&key=${process.env.GOOGLE_API_KEY}`;
-//     return photoUrl;
-// }
 
 async function fetchAndInsertReviews(restaurant) {
     
@@ -300,22 +294,6 @@ async function getPlaceDetails(placeId) {
     const details = await response.json();
     return details.result; 
 }
-
-// async function getPlacePhotos(photo_reference){
-//     const params = new URLSearchParams({
-//         photoreference: photo_reference,
-//         maxheight: 1000,
-//         maxwidth: 1000,
-//         key: process.env.GOOGLE_API_KEY
-//     });
-
-//     const response = await fetch(`https://maps.googleapis.com/maps/api/place/photo?${params}`);
-//     if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-//     const photo = await response.json();
-//     return photo;
-// }
 
 async function removeDuplicates() {
     try {

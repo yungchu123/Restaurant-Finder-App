@@ -25,4 +25,10 @@ router
 
 router.post('/login', usersController.loginUser)
 
+router
+  .route('/:id/favorites')
+  .get(usersController.getFavorites)
+  .put(usersController.addFavorite)
+  .delete(usersController.removeFavorite)
+
 module.exports = router;
