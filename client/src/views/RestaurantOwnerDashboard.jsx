@@ -110,7 +110,9 @@ const RestaurantOwnerDashboard = () => {
 
     return (
       <>
-        <h2>Congratulations</h2>
+        <div style={{height: '80vh'}} className="d-flex justify-content-center align-items-center">
+            <h2>Congratulation on your opening! &#127881; &#127881;</h2>
+        </div>
       </>
     )
 }
