@@ -5,6 +5,7 @@ const Review = require('../models/reviewModel')
 const getCoordinates = require('../utils/getCoordinates')
 const axios = require('axios')
 const Reservation = require('../models/reservationModel')
+const User = require('../models/userModel')
 
 // @desc Get all restaurants in database
 // @route GET /restaurants
@@ -176,6 +177,10 @@ const createNewRestaurant = async (req, res) => {
         newRestaurant.restaurantId = newRestaurant._id
     
         const savedRestaurant = await newRestaurant.save();
+
+        await User.findByIdAndUpdate(managerId, {
+            $set: { restaurantOwned: savedRestaurant.restaurantId }
+        });
     
         res.status(201).json({ message: "Restaurant registered successfully", restaurant: savedRestaurant });
         } catch (error) {
