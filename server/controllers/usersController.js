@@ -51,10 +51,6 @@ const getUserReviews = asyncHandler(async (req, res) => {
 const getUserReservations = asyncHandler(async (req, res) => {
     const reservations = await Reservation.find({ customerId: {$eq: req.params.id} }).lean()
 
-    if (!reservations?.length) {
-        res.status(404).json({ error: 'No reservations found'})
-        throw new CustomError(404, 'No reservations found')
-    }
     res.json(reservations)
 })
 
