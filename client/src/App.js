@@ -7,6 +7,7 @@ import RegisterForm from "./views/RegisterPage";
 import ForgetPassword from "./components/ForgetPassword";
 import RestaurantPage from "./views/RestaurantPage";
 import ManageRestaurantPage from "./views/ManageRestaurantPage";
+import UpdateRestaurantPage from "./views/UpdateRestaurantPage";
 import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
 import TAndC from "./components/TAndC";
@@ -24,6 +25,7 @@ export const MyContext = createContext();
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState({})
+    const [restaurant, setRestaurant] = useState({})
 
     useEffect(() => {
       // Check for the user's login status when the component mounts
@@ -45,6 +47,23 @@ function App() {
           })();
       }
     }, []);
+
+    useEffect(() => {
+        // Load restaurant details if user is restaurant owner
+        if (user.role === 'restaurateur' && user.restaurantOwned !== null) {
+          (async () => {
+            axios.get(`${process.env.REACT_APP_SERVER_URL}/api/users/${user._id}/manager/details`)
+            .then(response => {
+                console.log('Restaurant data:', response.data);
+                setRestaurant(response.data)
+            })
+            .catch(error => {
+                if (error.response) console.error(`User data not found: ${error.response} | Status: ${error.response.status}`);
+                else console.log(`Error: ${error}`)
+            });
+          })();
+        }
+    }, [user])
 
 
     return (
@@ -72,7 +91,8 @@ function App() {
                 {/* Pages for Restaurant Owner Only */}
                 { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
                   <>
-                      <Route path="/restaurant/manage" element={<ManageRestaurantPage/>}/>
+                      <Route path="/restaurant/manage" element={<ManageRestaurantPage restaurant={restaurant}/>}/>
+                      <Route path="/restaurant/manage/update" element={<UpdateRestaurantPage restaurant={restaurant} setRestaurant={setRestaurant}/>}/>
                   </>
                 )}
 
