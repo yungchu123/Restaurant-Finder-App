@@ -42,6 +42,23 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 // @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
+  const sort = req.query.sort;
+  
+  let limit = parseInt(req.query.limit);
+  if (isNaN(limit)) {
+    limit = 40;
+  } else if (limit < 1 || limit > 60) {
+    return res.status(400).json({ message: 'Limit must be between 1 and 60.' });
+  }
+
+  let maxDist = parseInt(req.query.distance);
+  if (isNaN(maxDist)) {
+    maxDist = 1000;
+  } else if (maxDist < 500 || maxDist > 3000) {
+    return res.status(400).json({ message: 'Distance must be between 500 and 3000.' });
+  }
+
+
   if (Array.isArray(req.query.address)){
     if (req.query.address.length > 3 || req.query.address.length < 2) {
         return res.status(400).json({ message: 'Please provide only up to 3 postal codes.' });
@@ -55,10 +72,6 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
   else {
     return res.status(400).json({ message: 'Please provide address or postal codes.' });
   }
-
-  const sort = req.query.sort;
-  const limit = req.query.limit || 40;
-  const maxDist = req.query.distance || 1000;
   
   let sortCriteria = {};
   if(sort === 'rating'){
