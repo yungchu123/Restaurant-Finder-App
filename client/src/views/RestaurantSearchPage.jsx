@@ -23,16 +23,16 @@ const RestaurantSearchPage = () => {
         const fetchData = async () => {
             try {
                 const limit = 20;
+                const parsedLocation = location.split(" ").join("&address=")
                 const url = location ? 
-                `${process.env.REACT_APP_SERVER_URL}/api/restaurants/nearby?address=${location}&sort=${sortValue}&distance=${distanceFilter}` :
+                `${process.env.REACT_APP_SERVER_URL}/api/restaurants/nearby?address=${parsedLocation}&sort=${sortValue}&distance=${distanceFilter}` :
                 `${process.env.REACT_APP_SERVER_URL}/api/restaurants?limit=${limit}`
                 const response = await axios.get(url);
-                console.log('Restaurants:', response.data);
                 if (response.data.message === "No restaurants found") {
                     setRestaurants([])
                 } else {
                     setRestaurants(response.data);
-                }
+                } 
                 setLoading(false)
             } catch (error) {
                 console.log(`Error: ${error}`);

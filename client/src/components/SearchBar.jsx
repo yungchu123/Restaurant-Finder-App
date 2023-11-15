@@ -10,9 +10,7 @@ const SearchBar = ({location, setLocation}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        // VALIDATION
-        
-
+ 
         // Redirect to search page if not there
         if (pathname !== '/restaurant/search') {
             navigate('/restaurant/search', { replace: true, state: {

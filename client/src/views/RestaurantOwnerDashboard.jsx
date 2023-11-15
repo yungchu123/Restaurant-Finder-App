@@ -4,7 +4,7 @@ import { MyContext } from '../App'
 import RestaurantCard from '../components/RestaurantCard'
 import axios from 'axios'
 import CreateRestaurantForm from '../components/CreateRestaurantForm'
-import logo from '../images/Screenshot_1.png'
+import logo from '../images/congratulation.png'
 
 const RestaurantOwnerDashboard = () => {
     const { user } = useContext(MyContext)
