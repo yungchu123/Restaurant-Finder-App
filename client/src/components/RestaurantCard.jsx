@@ -1,16 +1,17 @@
 import React from 'react'
 import '../index.css';
+import defaultImage from '../images/defaultRestaurantPhoto.jpg'
 // import Star from './Star'
 
 const RestaurantCard = ({name, cuisine, rating, numReviews, imgUrl, forClaimingOwner}) => {
-
+    console.log(imgUrl)
     return (
         <>
             <div class="icon-link icon-link-hover" style={{height:'100%'}}>
                 <div class="card card-hover" style={{ width: '18rem', height: '100%', position: 'relative' }}>
                     {/* Image */}
                     <img style={{height: '150px', objectFit: 'cover'}}
-                    src={imgUrl} class="card-img-top" alt="..."/>
+                    src={imgUrl || defaultImage} class="card-img-top" alt="..."/>
 
                     {/* Restaurant Details */}
                     <div class="card-body d-flex flex-column justify-content-between">
@@ -38,7 +39,7 @@ function capitalize(str) {
 }
 
 RestaurantCard.defaultProps = {
-    forClaimingOwner: false
+    forClaimingOwner: false,
 }
 
 export default RestaurantCard

@@ -296,20 +296,19 @@ const getRestaurantReservations = asyncHandler(async (req, res) => {
 // @route POST /restaurants/:restaurantId/reservations
 // @access Private
 const reserveTable = asyncHandler(async (req, res) => {
-    const { restaurantId } = req.params.restaurantId;
+    const restaurantId  = req.params.restaurantId;
     const { customerId, partySize, reservationDate, reservationTime } = req.body;
 
     try {
-        const restaurant = await Restaurant.findOne({ restaurantId: {$eq: restaurantId} }).lean();
-  
+        const restaurant = await Restaurant.findOne({ restaurantId: restaurantId }).lean();
+
         if (!restaurant) {
             return res.status(404).json({ message: "Restaurant not found" });
         }
-
         // Allocate table number
         const availableTables = restaurant.tables.filter((t) => t.isAvailable);
         let allocatedTableNumber = null;
-
+        console.log('A')
         if (availableTables.length === 0){
             res.status(400).json({ error: 'No more tables available for reservation' });
             throw new CustomError(400, 'No more tables available for reservation')
@@ -334,12 +333,13 @@ const reserveTable = asyncHandler(async (req, res) => {
             throw new CustomError(400, `No more tables of this party size (=${partySize}) available for reservation`)
         }
         
+        console.log('B')
         // Create and store new user
         const status = "pending"
         const reservationObject = {'restaurantId':req.params.restaurantId,customerId,'tableNumber':allocatedTableNumber,partySize,reservationDate,reservationTime,status}
 
         const reservation = await Reservation.create(reservationObject)
-        
+        console.log('C')
         if (reservation) {
             console.log(reservation)
             res.status(201).json(reservation)

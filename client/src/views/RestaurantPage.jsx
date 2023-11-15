@@ -6,6 +6,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { MyContext } from '../App';
 import axios from 'axios';
+import defaultImage from '../images/defaultRestaurantPhoto.jpg'
 
 const RestaurantPage = ({isAuthenticated}) => {
   const [displayAddReview, setDisplayAddReview] = useState(false)
@@ -119,7 +120,7 @@ const RestaurantPage = ({isAuthenticated}) => {
     width: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'repeat-x',
-    backgroundImage: `url(${restaurant.imageData})`,
+    backgroundImage: `url(${restaurant.imageData || defaultImage})`,
   }
 
   const darkOverlay = {
