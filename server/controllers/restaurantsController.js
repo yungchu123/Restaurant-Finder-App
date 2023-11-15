@@ -6,6 +6,7 @@ const getCoordinates = require('../utils/getCoordinates')
 const axios = require('axios')
 const Reservation = require('../models/reservationModel')
 const User = require('../models/userModel')
+const calculateCentralPoint = require('../utils/calculateCentralPoint')
 
 // @desc Get all restaurants in database
 // @route GET /restaurants
@@ -37,15 +38,27 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
     res.json(updatedRestaurants);
 });
 
-// @desc Get nearby restaurants within radius of an address/postal code and sort by distance or ratings
+// @desc Get nearby restaurants within radius of an address/postal code (or multiple) and sort by distance or ratings
 // @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
-  const address = req.query.address;
+  if (Array.isArray(req.query.address)){
+    if (req.query.address.length > 3 || req.query.address.length < 2) {
+        return res.status(400).json({ message: 'Please provide only up to 3 postal codes.' });
+      }
+    const coordinates = await Promise.all(req.query.address.map(getCoordinates));
+    [longitude, latitude] = calculateCentralPoint(coordinates);
+    }
+  else if (req.query.address) {
+    [longitude, latitude] = await getCoordinates(req.query.address);
+  } 
+  else {
+    return res.status(400).json({ message: 'Please provide an address or postal codes.' });
+  }
+
   const sort = req.query.sort;
   const limit = req.query.limit || 40;
   const maxDist = req.query.distance || 1000;
-  const [longitude, latitude] = await getCoordinates(address);
   
   let sortCriteria = {};
   if(sort === 'rating'){
@@ -66,8 +79,6 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
   if (!nearbyRestaurants?.length) {
     return res.status(200).json({ message: 'No restaurants found' });
   }
-
-  console.log(nearbyRestaurants);
 
   const updatedRestaurants = await Promise.all(nearbyRestaurants.map(async (restaurant) => {
     let updatedRestaurant = {...restaurant._doc}; 
