@@ -247,8 +247,9 @@ const deleteReview = asyncHandler(async (req, res) => {
         restaurantNumReviews = restaurantResponse.data.numReviews
         restaurantRating = restaurantResponse.data.rating
         
-        restaurantRating = (restaurantRating * restaurantNumReviews - rating)/(-- restaurantNumReviews)
+        restaurantRating = (restaurantRating * restaurantNumReviews - rating)/(restaurantNumReviews - 1)
         restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
+        restaurantNumReviews -= 1
         
         try{
             const restaurantResponse2 = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {

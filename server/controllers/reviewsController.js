@@ -90,9 +90,10 @@ const createNewReview = asyncHandler(async (req, res) => {
         res.status(201).json(review)
 
         // Re-calculate restaurant ratings
-        restaurantRating = (restaurantRating * restaurantNumReviews + rating)/(++ restaurantNumReviews)
+        restaurantRating = (restaurantRating * restaurantNumReviews + rating)/(restaurantNumReviews + 1)
         restaurantRating = Math.round(restaurantRating * 10) / 10 // Rounding Ratings to 1dp
-
+        restaurantNumReviews += 1
+        
         try{
             const userResponse = await axios.patch(`http://localhost:5000/api/restaurants/${restaurantId}`, {
                 rating: restaurantRating,
