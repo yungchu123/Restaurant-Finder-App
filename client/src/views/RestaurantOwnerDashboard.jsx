@@ -3,12 +3,14 @@ import { NavLink } from 'react-router-dom'
 import { MyContext } from '../App'
 import RestaurantCard from '../components/RestaurantCard'
 import axios from 'axios'
+import CreateRestaurantForm from '../components/CreateRestaurantForm'
 
 const RestaurantOwnerDashboard = () => {
     const { user } = useContext(MyContext)
     const [hasRestaurant, setHasRestaurant] = useState(user.restaurantOwned !== null)
-    const [searchValue, setSearchValue] = useState('')
     const [restaurants, setRestaurants] = useState([])
+
+    const [searchValue, setSearchValue] = useState('')
 
     useEffect(() => {
         // Pull a list of favourite restaurants from the backend
@@ -51,18 +53,19 @@ const RestaurantOwnerDashboard = () => {
           setHasRestaurant(true)
           alert(response.data.message)
       } catch (error) {
-          console.log(error)
+          alert(error.response.data.message)
       }
     }
 
     if (!hasRestaurant) return (
       <>
           <h2 className='text-center mt-3 mb-5'>Restaurant Set Up</h2>
-          <div className="row">
+          <div className="row mx-0">
+                {/* LEFT SIDE  */}
                 <div className="col-8">
-                    <h3 className='text-center'>Find your restaurants</h3>
+                    <h3 className='text-center mb-3'>Find your restaurants</h3>
                     {/* Search Bar */}
-                    <div className="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center mb-5">
                         <div className="col-9 p-0">
                             <input value={searchValue} onChange={e => setSearchValue(e.target.value)} 
                             class="form-control" placeholder="Restaurant Name" />
@@ -73,7 +76,7 @@ const RestaurantOwnerDashboard = () => {
                     </div>
 
                     {/* List of Restaurant Cards */}
-                    <div className="row row-cols-3 row-gap-3 mb-5">
+                    <div className="row row-cols-3 row-gap-3 mb-5 mx-0">
                     {restaurants.map(restaurant => (
                             <div className="col">
                               <div style={{height: '250px'}}>
@@ -95,8 +98,11 @@ const RestaurantOwnerDashboard = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* RIGHT SIDE */}
                 <div className="col-4">
-                  Restaurant
+                    <h3 className='text-center mb-3'>Don't have one?</h3>
+                    <CreateRestaurantForm setHasRestaurant={setHasRestaurant}/>
                 </div>
           </div>
       </>
@@ -104,7 +110,9 @@ const RestaurantOwnerDashboard = () => {
 
     return (
       <>
-        <h2>Congratulations</h2>
+        <div style={{height: '80vh'}} className="d-flex justify-content-center align-items-center">
+            <h2>Congratulation on your opening! &#127881; &#127881;</h2>
+        </div>
       </>
     )
 }

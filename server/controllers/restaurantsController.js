@@ -173,6 +173,13 @@ const createNewRestaurant = async (req, res) => {
             coordinates: [longitude, latitude],
         }
 
+        // Default Table
+        const defaultTables = Array.from({ length: 15 }, (_, index) => ({
+            tableNumber: index + 1,
+            tableCapacity: index < 5 ? 2 : (index < 10 ? 4 : (index < 13 ? 6 : 8)),
+            isAvailable: true
+        }));
+
         const newRestaurant = new Restaurant({
             restaurantName,
             description,
@@ -182,7 +189,7 @@ const createNewRestaurant = async (req, res) => {
             cuisine,
             photoReference,
             createdBy: managerId,
-            tables
+            tables: tables || defaultTables
         });
 
         newRestaurant.restaurantId = newRestaurant._id

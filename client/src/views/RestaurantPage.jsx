@@ -231,7 +231,7 @@ const RestaurantPage = ({isAuthenticated}) => {
               ))}
         </div>
         <div className="col-lg-4">
-          <ReservationCard/>
+          <ReservationCard restaurantId={id} isAuthenticated={isAuthenticated}/>
         </div>
       </div>
     </>
