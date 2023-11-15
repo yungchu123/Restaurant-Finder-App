@@ -417,7 +417,7 @@ const getManagerRestaurants = asyncHandler(async (req, res) => {
     if (user.role !== 'restaurateur') {
         return res.status(403).json({ message: "Access denied. Only restaurateurs can perform this action." });
     }
-    const unclaimedRestaurants = await Restaurant.find({ created_by: null });
+    const unclaimedRestaurants = await Restaurant.find({ createdBy: null });
     const restaurantIds = unclaimedRestaurants.map(restaurant => restaurant.restaurantId);
     res.json(restaurantIds);
 });
