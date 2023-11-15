@@ -276,7 +276,7 @@ const reserveTable = asyncHandler(async (req, res) => {
     const { customerId, partySize, reservationDate, reservationTime } = req.body;
 
     try {
-        const restaurant = await Restaurant.findOne({ restaurantId: {$eq: req.params.restaurantId} }).lean();
+        const restaurant = await Restaurant.findOne({ restaurantId: {$eq: restaurantId} }).lean();
   
         if (!restaurant) {
             return res.status(404).json({ message: "Restaurant not found" });

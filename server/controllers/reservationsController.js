@@ -63,7 +63,6 @@ const updateReservation = asyncHandler(async (req,res) => {
     res.json(updatedReservation)
 })
 
-
 module.exports = {
     getAllReservations,
     getReservation,

@@ -115,7 +115,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     // Hash password
     const hashedPwd = await bcrypt.hash(password,10)
-    const userObject = {firstName, lastName, username, "password":hashedPwd, email, role, favourites: []}
+    const userObject = {firstName, lastName, username, "password":hashedPwd, email, role, favourites: [], restaurantOwned: null}
 
     // Create and store new user
     const user = await User.create(userObject)
@@ -405,6 +405,56 @@ const getFavorites = asyncHandler(async (req, res) => {
     res.json(user.favorites);
 });
 
+// @desc Manager display a list of restaurants to own/claim
+// @route GET /users/:id/manager
+// @access Private
+const getManagerRestaurants = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    if (user.role !== 'restaurateur') {
+        return res.status(403).json({ message: "Access denied. Only restaurateurs can perform this action." });
+    }
+    const unclaimedRestaurants = await Restaurant.find({ created_by: null });
+    const restaurantIds = unclaimedRestaurants.map(restaurant => restaurant._id);
+    res.json(restaurantIds);
+});
+
+// @desc Manager select restaurant to bcome owner 
+// @route PATCH /users/:id/manager
+// @access Private
+const claimRestaurant = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const { restaurantId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.role !== 'restaurateur') {
+        return res.status(403).json({ message: "Access denied. Only restaurateurs can perform this action." });
+    }
+    if (user.restaurantOwned) {
+        return res.status(400).json({ message: "You already own a restaurant." });
+    }
+    const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
+    if (!restaurant) {
+        return res.status(404).json({ message: "Restaurant not found" });
+    }
+    if (restaurant.createdBy) {
+        return res.status(400).json({ message: "Restaurant is already claimed." });
+    }
+    restaurant.createdBy = userId;
+    await restaurant.save();
+
+    user.restaurantOwned = restaurantId;
+    await user.save();
+
+    res.json({ message: "Restaurant claimed successfully" });
+});
+
 module.exports = {
     getAllUsers,
     getUser,
@@ -419,5 +469,7 @@ module.exports = {
     deleteReservation,
     addFavorite,
     removeFavorite,
-    getFavorites
+    getFavorites,
+    getManagerRestaurants,
+    claimRestaurant
 }

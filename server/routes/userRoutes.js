@@ -31,4 +31,9 @@ router
   .put(usersController.addFavorite)
   .delete(usersController.removeFavorite)
 
+router
+  .route('/:id/manager')
+  .get(usersController.getManagerRestaurants)
+  .patch(usersController.claimRestaurant)
+
 module.exports = router;
