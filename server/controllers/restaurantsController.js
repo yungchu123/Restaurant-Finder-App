@@ -230,7 +230,6 @@ const updateRestaurant = asyncHandler(async (req,res) => {
         cuisine,
         photoReference,
         createdBy,
-        reservations,
         tables
     } = req.body;
 
@@ -238,13 +237,12 @@ const updateRestaurant = asyncHandler(async (req,res) => {
     const updatedFields = {
         ...(restaurantName && { restaurantName }),
         ...(description && { description }),
-        ...(rating && { rating }),
-        ...(numReviews && { numReviews }),
+        ...(rating !== undefined && { rating }),
+        ...(numReviews !== undefined && { numReviews }),
         ...(location && { location }),
         ...(cuisine && { cuisine }),
         ...(photoReference && { photoReference }),
         ...(createdBy && { createdBy }),
-        ...(reservations && { reservations }),
         ...(tables && { tables }),
     };
 
