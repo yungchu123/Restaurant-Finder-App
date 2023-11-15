@@ -42,7 +42,7 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 // @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
-  const sort = req.query.sort;
+  let sort = req.query.sort;
   if (!sort || sort === '') {
     sort = 'distance';
   }
