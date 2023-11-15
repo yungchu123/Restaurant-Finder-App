@@ -17,7 +17,7 @@ const AddReviewCard = ({setDisplayAddReview, setReviews, setSuccessMsg, setResta
 
         // Add a new review to database
         axios.post(`${process.env.REACT_APP_SERVER_URL}/api/reviews`, 
-            JSON.stringify({ restaurantId, rating, text, authorId: user._id }), 
+            JSON.stringify({ restaurantId, rating: Number(rating), text, authorId: user._id }), 
             { headers: {'Content-Type': 'application/json'} }
         )
         .then(response => {
@@ -28,7 +28,7 @@ const AddReviewCard = ({setDisplayAddReview, setReviews, setSuccessMsg, setResta
                 return {
                     ...restaurant,
                     numReviews: restaurant.numReviews + 1,
-                    rating: ((restaurant.numReviews * restaurant.rating) + rating) / (restaurant.numReviews + 1)
+                    rating: ((restaurant.numReviews * restaurant.rating) + Number(rating)) / (restaurant.numReviews + 1)
                 }
             })
             console.log('Review:', response.data);

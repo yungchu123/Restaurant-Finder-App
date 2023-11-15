@@ -42,8 +42,14 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 // @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
-  const sort = req.query.sort;
-  
+  let sort = req.query.sort;
+  if (!sort || sort === '') {
+    sort = 'distance';
+  }
+  if (sort !== 'rating' && sort !== 'distance') {
+    return res.status(400).json({ message: 'Invalid sort type. Use either \'rating\' or \'distance\'.' });
+  }
+
   let limit = parseInt(req.query.limit);
   if (isNaN(limit)) {
     limit = 40;
@@ -57,7 +63,6 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
   } else if (maxDist < 500 || maxDist > 3000) {
     return res.status(400).json({ message: 'Distance must be between 500 and 3000.' });
   }
-
 
   if (Array.isArray(req.query.address)){
     if (req.query.address.length > 3 || req.query.address.length < 2) {
