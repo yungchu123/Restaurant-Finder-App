@@ -42,6 +42,23 @@ const getAllRestaurants = asyncHandler(async (req, res) => {
 // @route GET /restaurants/nearby
 // @access Public
 const getNearbyRestaurants = asyncHandler(async (req, res) => {
+  const sort = req.query.sort;
+  
+  let limit = parseInt(req.query.limit);
+  if (isNaN(limit)) {
+    limit = 40;
+  } else if (limit < 1 || limit > 60) {
+    return res.status(400).json({ message: 'Limit must be between 1 and 60.' });
+  }
+
+  let maxDist = parseInt(req.query.distance);
+  if (isNaN(maxDist)) {
+    maxDist = 1000;
+  } else if (maxDist < 500 || maxDist > 3000) {
+    return res.status(400).json({ message: 'Distance must be between 500 and 3000.' });
+  }
+
+
   if (Array.isArray(req.query.address)){
     if (req.query.address.length > 3 || req.query.address.length < 2) {
         return res.status(400).json({ message: 'Please provide only up to 3 postal codes.' });
@@ -53,12 +70,8 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
     [longitude, latitude] = await getCoordinates(req.query.address);
   } 
   else {
-    return res.status(400).json({ message: 'Please provide an address or postal codes.' });
+    return res.status(400).json({ message: 'Please provide address or postal codes.' });
   }
-
-  const sort = req.query.sort;
-  const limit = req.query.limit || 40;
-  const maxDist = req.query.distance || 1000;
   
   let sortCriteria = {};
   if(sort === 'rating'){
@@ -141,10 +154,6 @@ const getRestaurant = asyncHandler(async (req, res) => {
 // @access Private
 const getRestaurantReviews = asyncHandler(async (req, res) => {
     const reviews = await Review.find({ restaurantId: {$eq: req.params.restaurantId} }).lean()
-    if (!reviews?.length) {
-        res.status(400).json({ error: 'No reviews found'})
-        throw new CustomError(400, 'No reviews found')
-    }
     res.json(reviews)
 })
 
@@ -284,10 +293,6 @@ const getRestaurantReservations = asyncHandler(async (req, res) => {
     
     const reservations = await Reservation.find({ restaurantId: {$eq: req.params.restaurantId} }).lean()
     
-    if (!reservations?.length) {
-        res.status(404).json({ error: 'No reservations found'})
-        throw new CustomError(404, 'No reservations found')
-    }
     res.json(reservations)
 });
 
@@ -296,16 +301,15 @@ const getRestaurantReservations = asyncHandler(async (req, res) => {
 // @route POST /restaurants/:restaurantId/reservations
 // @access Private
 const reserveTable = asyncHandler(async (req, res) => {
-    const { restaurantId } = req.params.restaurantId;
+    const restaurantId  = req.params.restaurantId;
     const { customerId, partySize, reservationDate, reservationTime } = req.body;
 
     try {
-        const restaurant = await Restaurant.findOne({ restaurantId: {$eq: restaurantId} }).lean();
-  
+        const restaurant = await Restaurant.findOne({ restaurantId: restaurantId }).lean();
+
         if (!restaurant) {
             return res.status(404).json({ message: "Restaurant not found" });
         }
-
         // Allocate table number
         const availableTables = restaurant.tables.filter((t) => t.isAvailable);
         let allocatedTableNumber = null;
@@ -339,7 +343,7 @@ const reserveTable = asyncHandler(async (req, res) => {
         const reservationObject = {'restaurantId':req.params.restaurantId,customerId,'tableNumber':allocatedTableNumber,partySize,reservationDate,reservationTime,status}
 
         const reservation = await Reservation.create(reservationObject)
-        
+
         if (reservation) {
             console.log(reservation)
             res.status(201).json(reservation)

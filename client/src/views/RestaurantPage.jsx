@@ -6,6 +6,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { MyContext } from '../App';
 import axios from 'axios';
+import defaultImage from '../images/defaultRestaurantPhoto.jpg'
 
 const RestaurantPage = ({isAuthenticated}) => {
   const [displayAddReview, setDisplayAddReview] = useState(false)
@@ -119,7 +120,7 @@ const RestaurantPage = ({isAuthenticated}) => {
     width: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'repeat-x',
-    backgroundImage: `url(${restaurant.imageData})`,
+    backgroundImage: `url(${restaurant.imageData || defaultImage})`,
   }
 
   const darkOverlay = {
@@ -193,7 +194,12 @@ const RestaurantPage = ({isAuthenticated}) => {
                 )}
               </div>
               
-              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} setReviews={setReviews} setSuccessMsg={setSuccessMsg} restaurantId={id}/>}
+              { displayAddReview && <AddReviewCard 
+                        setDisplayAddReview={setDisplayAddReview} 
+                        setReviews={setReviews} 
+                        setSuccessMsg={setSuccessMsg} 
+                        setRestaurant={setRestaurant}
+                        restaurantId={id}/>}
 
               <hr className="mt-4"/>
               {/* Description Section */}
@@ -224,6 +230,7 @@ const RestaurantPage = ({isAuthenticated}) => {
 
               {/* Reviews Section */}
               <h3 className="mb-3">Reviews</h3>
+              {reviews.length === 0 && <p>Be the first to comment.</p>}
               {reviews.map(review => (
                   <div className="mb-4" key={review._id}>
                       <ReviewCard authorName={review.authorName} rating={review.rating} description={review.text}/>
@@ -231,7 +238,7 @@ const RestaurantPage = ({isAuthenticated}) => {
               ))}
         </div>
         <div className="col-lg-4">
-          <ReservationCard/>
+          <ReservationCard restaurantId={id} isAuthenticated={isAuthenticated}/>
         </div>
       </div>
     </>

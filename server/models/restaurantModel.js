@@ -63,7 +63,7 @@ const restaurantSchema = new mongoose.Schema({
     }
 });
 
-// allows for geospatial queries e.g. find restaurants within 5km of a location
+// allows for geospatial queries 
 restaurantSchema.index({ location: '2dsphere' });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
