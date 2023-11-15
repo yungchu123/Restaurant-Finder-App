@@ -53,7 +53,7 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
     [longitude, latitude] = await getCoordinates(req.query.address);
   } 
   else {
-    return res.status(400).json({ message: 'Please provide an address or postal codes.' });
+    return res.status(400).json({ message: 'Please provide address or postal codes.' });
   }
 
   const sort = req.query.sort;
