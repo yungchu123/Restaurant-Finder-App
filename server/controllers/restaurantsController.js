@@ -142,37 +142,38 @@ const getRestaurantReviews = asyncHandler(async (req, res) => {
 const createNewRestaurant = async (req, res) => {
     try {
         const {
-            restaurantId = req.body.restaurantId,
-            restaurantName = req.body.inputRefValue,
-            description = req.body.description,
-            location = req.body.restaurantAddress, 
-            cuisine = req.body.cuisine,
-            photoReference = req.body.photoReference,
-            createdBy = req.body.username
+            restaurantName,
+            description,
+            postalCode,
+            cuisine,
+            photoReference,
+            managerId,
+            tables
         } = req.body;
-        console.log(req.body.inputRefValue)
         
         const defaultRating = 0;
         const defaultNumReviews = 0;
-           
-        const defaultTables = Array.from({ length: 15 }, (_, index) => ({
-            tableNumber: index + 1,
-            tableCapacity: index < 5 ? 2 : (index < 10 ? 4 : (index < 13 ? 6 : 8)),
-            isAvailable: true
-        }));
+
+        // Changing postal code into longitude/ latitude
+        const [longitude, latitude] = await getCoordinates(postalCode);
+        const location = {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+        }
 
         const newRestaurant = new Restaurant({
-            restaurantId,
             restaurantName,
             description,
             rating: defaultRating,
             numReviews: defaultNumReviews,
-            location,
+            location: location,
             cuisine,
             photoReference,
-            createdBy,
-            tables: defaultTables
+            createdBy: managerId,
+            tables
         });
+
+        newRestaurant.restaurantId = newRestaurant._id
     
         const savedRestaurant = await newRestaurant.save();
     
