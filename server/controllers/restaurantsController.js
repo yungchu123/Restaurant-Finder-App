@@ -51,7 +51,6 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
     }
   else if (req.query.address) {
     [longitude, latitude] = await getCoordinates(req.query.address);
-    console.log("point: " + [longitude, latitude])
   } 
   else {
     return res.status(400).json({ message: 'Please provide an address or postal codes.' });
