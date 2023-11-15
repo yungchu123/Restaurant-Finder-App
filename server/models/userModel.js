@@ -38,7 +38,10 @@ const userSchema = new mongoose.Schema({
   },
   favorites: [{
     type: String
-  }]
+  }],
+  restaurantOwned: {
+    type: String
+  }
 });
 
 const User = mongoose.model("User", userSchema);
