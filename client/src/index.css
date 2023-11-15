@@ -44,3 +44,16 @@
     align-items: center;
     justify-content: center;
   }
+
+/* Status Color */
+.accepted {
+    background-color: #76F39B;
+}
+
+.declined {
+    background-color: #F3768F;
+}
+
+.pending {
+    background-color: #F3DA76;
+}

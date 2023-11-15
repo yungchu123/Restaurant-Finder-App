@@ -9,7 +9,6 @@ import RestaurantPage from "./views/RestaurantPage";
 import ManageRestaurantPage from "./views/ManageRestaurantPage";
 import ReservationPage from "./views/ReservationPage";
 import FavouriteRestaurantPage from "./views/FavouriteRestaurantPage";
-import ManageReservationCard from "./components/ManageReservationCard";
 import TAndC from "./components/TAndC";
 import HomePage from "./views/HomePage";
 import ProfilePage from "./views/ProfilePage";
@@ -74,7 +73,6 @@ function App() {
                 { isAuthenticated && user.role.toLowerCase()==="restaurateur" && (
                   <>
                       <Route path="/restaurant/manage" element={<ManageRestaurantPage/>}/>
-                      <Route path="/managereservationcard" element={<ManageReservationCard/>}/>
                   </>
                 )}
 
