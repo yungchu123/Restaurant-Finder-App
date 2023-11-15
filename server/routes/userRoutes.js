@@ -32,12 +32,12 @@ router
   .delete(usersController.removeFavorite)
 
 router
-  .route('/:id/manager/details')
-  .get(usersController.getRestaurantByOwner)
-
-router
   .route('/:id/manager')
   .get(usersController.getManagerRestaurants)
   .patch(usersController.claimRestaurant)
 
+router
+  .route('/:id/manager/details')
+  .get(usersController.getRestaurantByOwner)
+  
 module.exports = router;
