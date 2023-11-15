@@ -1,35 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MyContext } from '../App';
-import axios from 'axios';
 import defaultImage from '../images/defaultRestaurantPhoto.jpg'
 import '../index.css';
 
-const ViewReservationCard = ({restaurantId, reservationId, restaurantName, customerName, status, partySize, reservationDate, reservationTime, imageData, setSuccessMsg}) => {
+const ViewReservationCard = ({restaurantId, reservationId, restaurantName, customerName, status, partySize, reservationDate, reservationTime, imageData, setSuccessMsg, onAccept, onReject}) => {
     const { user } = useContext(MyContext)
-    const [reservationStatus, setReservationStatus] = useState(status && status.charAt(0).toUpperCase() + status.slice(1))
-
-    const handleAccept = async () => {
-        try {
-            // /restaurants/:restaurantId/reservations/:reservationId
-            const response = await axios.patch(`${process.env.REACT_APP_SERVER_URL}/api/restaurants/${restaurantId}/reservations/${reservationId}`, { isAccepted: true })
-            setSuccessMsg(response.data.message)
-            setReservationStatus('Accepted')
-        } catch (err) {
-            console.log(`Error: ${err}`)
-        }
-    }
-
-    const handleReject = async () => {
-        try {
-            const response = await axios.patch(`${process.env.REACT_APP_SERVER_URL}/api/restaurants/${restaurantId}/reservations/${reservationId}`, { isAccepted: false })
-            setSuccessMsg(response.data.message)
-            setReservationStatus('Declined')
-        } catch (err) {
-            console.log(`Error: ${err}`)
-        }
-    }
-
+    const reservationStatus = status && status.charAt(0).toUpperCase() + status.slice(1)
 
     // For restaurant owner
     if (user.role === "restaurateur") return(
@@ -52,10 +29,10 @@ const ViewReservationCard = ({restaurantId, reservationId, restaurantName, custo
                                                 </ul>
                                             </p>
                                         </div>
-                                        { reservationStatus === "pending" && (
+                                        { reservationStatus.toLowerCase() === "pending" && (
                                             <div className='d-flex flex-column justify-content-center me-3'>
-                                                <div className="btn btn-success mb-3" onClick={handleAccept}>Accept</div>
-                                                <div className="btn btn-danger" onClick={handleReject}>Declined</div>
+                                                <div className="btn btn-success mb-3" onClick={onAccept}>Accept</div>
+                                                <div className="btn btn-danger" onClick={onReject}>Decline</div>
                                             </div>
                                         )}
                                     </div>
