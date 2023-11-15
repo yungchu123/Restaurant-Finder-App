@@ -194,7 +194,12 @@ const RestaurantPage = ({isAuthenticated}) => {
                 )}
               </div>
               
-              { displayAddReview && <AddReviewCard setDisplayAddReview={setDisplayAddReview} setReviews={setReviews} setSuccessMsg={setSuccessMsg} restaurantId={id}/>}
+              { displayAddReview && <AddReviewCard 
+                        setDisplayAddReview={setDisplayAddReview} 
+                        setReviews={setReviews} 
+                        setSuccessMsg={setSuccessMsg} 
+                        setRestaurant={setRestaurant}
+                        restaurantId={id}/>}
 
               <hr className="mt-4"/>
               {/* Description Section */}
@@ -225,6 +230,7 @@ const RestaurantPage = ({isAuthenticated}) => {
 
               {/* Reviews Section */}
               <h3 className="mb-3">Reviews</h3>
+              {reviews.length === 0 && <p>Be the first to comment.</p>}
               {reviews.map(review => (
                   <div className="mb-4" key={review._id}>
                       <ReviewCard authorName={review.authorName} rating={review.rating} description={review.text}/>

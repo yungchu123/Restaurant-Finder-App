@@ -141,10 +141,6 @@ const getRestaurant = asyncHandler(async (req, res) => {
 // @access Private
 const getRestaurantReviews = asyncHandler(async (req, res) => {
     const reviews = await Review.find({ restaurantId: {$eq: req.params.restaurantId} }).lean()
-    if (!reviews?.length) {
-        res.status(400).json({ error: 'No reviews found'})
-        throw new CustomError(400, 'No reviews found')
-    }
     res.json(reviews)
 })
 

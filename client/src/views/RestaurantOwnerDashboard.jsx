@@ -4,7 +4,7 @@ import { MyContext } from '../App'
 import RestaurantCard from '../components/RestaurantCard'
 import axios from 'axios'
 import CreateRestaurantForm from '../components/CreateRestaurantForm'
-import logo from '../images/congratulations.png'
+import logo from '../images/Screenshot_1.png'
 
 const RestaurantOwnerDashboard = () => {
     const { user } = useContext(MyContext)
@@ -112,7 +112,7 @@ const RestaurantOwnerDashboard = () => {
     return (
       <>
         <div style={{height: '92.1vh'}} className="d-flex justify-content-center align-items-center">
-            <img style={{width: '100%', height: '100%', objectFit: 'contain'}} src={logo} alt="" />
+            <img style={{width: '100%', height: '100%', objectFit: 'cover'}} src={logo} alt="" />
             {/* <h2>Congratulation on your opening! &#127881; &#127881;</h2> */}
         </div>
       </>

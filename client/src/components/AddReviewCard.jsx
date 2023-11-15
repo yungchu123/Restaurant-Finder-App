@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { MyContext } from '../App';
 import axios from 'axios';
 
-const AddReviewCard = ({setDisplayAddReview, setReviews, setSuccessMsg, restaurantId}) => {
+const AddReviewCard = ({setDisplayAddReview, setReviews, setSuccessMsg, setRestaurant, restaurantId}) => {
     const [rating, setRating] = useState(3)
     const [text, setText] = useState('')
     const [errMsg, setErrMsg] = useState('')
@@ -24,6 +24,13 @@ const AddReviewCard = ({setDisplayAddReview, setReviews, setSuccessMsg, restaura
             setDisplayAddReview(false)
             setReviews(reviews => [...reviews, response.data])
             setSuccessMsg("Review Added Successfully")
+            setRestaurant(restaurant => {
+                return {
+                    ...restaurant,
+                    numReviews: restaurant.numReviews + 1,
+                    rating: ((restaurant.numReviews * restaurant.rating) + rating) / (restaurant.numReviews + 1)
+                }
+            })
             console.log('Review:', response.data);
         })
         .catch(error => {
