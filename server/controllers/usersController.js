@@ -455,6 +455,25 @@ const claimRestaurant = asyncHandler(async (req, res) => {
     res.json({ message: "Restaurant claimed successfully" });
 });
 
+// @desc Manager get restaurant details
+// @route GET /users/:id/manager/details
+// @access Private
+const getRestaurantByOwner = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    if (!user.restaurantOwned) {
+        return res.status(404).json({ message: "This user does not own any restaurant" });
+    }
+    const restaurant = await Restaurant.findOne({ restaurantId: user.restaurantOwned });
+    if (!restaurant) {
+        return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.json(restaurant);
+});
+
 module.exports = {
     getAllUsers,
     getUser,
@@ -471,5 +490,6 @@ module.exports = {
     removeFavorite,
     getFavorites,
     getManagerRestaurants,
-    claimRestaurant
+    claimRestaurant,
+    getRestaurantByOwner
 }
