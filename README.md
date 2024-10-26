@@ -1,4 +1,19 @@
-## SC2006-Software-Eng-Project
+# Restaurant Finder App
+
+### Features
+- Location-Based Search: Automatically detects the user's location to show nearby restaurants.
+- Cuisine and Distance Filters: Filter by cuisine type (e.g., Italian, Chinese, Mexican) and distance (e.g. walk, bike, car) for personalized results.
+- Rating and Price Filtering: Narrow down options based on ratings and price range.
+- User Reviews and Ratings: View ratings and reviews to make informed choices.
+- Map Integration: Visualize restaurant locations directly on an interactive map.
+- Favorites List: Save favorite restaurants for quick access.
+
+### Tech Stacks
+- Frontend: JavaScript, HTML/CSS, React, Bootstrap
+- Backend: Express, Node.js
+- Database: MongoDB
+
+## Getting Started
 
 ### To Run Server Side (Express App)
 Step 1: Move to server folder (in a new terminal)
